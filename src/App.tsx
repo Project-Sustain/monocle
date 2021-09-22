@@ -58,21 +58,35 @@ You may add Your own copyright statement to Your modifications and may provide a
 END OF TERMS AND CONDITIONS
 */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import logo from './logo.svg';
 import './App.css';
 import Map from './map/Map';
 import MetadataEntry from './types/MetadataEntry';
+import ImportMapData from './ui/ImportMapData';
 
 export default function App() {
     const [features, setFeatures] = useState([] as GeoJSON.Feature[])
     const [metadata, setMetadata] = useState([] as MetadataEntry[])
+    const [bbox, setBbox] = useState(null as unknown as GeoJSON.BBox) 
+    const [dataImported, setDataImported] = useState(false as boolean)
+
+    const renderImporter = () => {
+        if(!dataImported) {
+            return <ImportMapData {...{setFeatures, setMetadata, setDataImported}}/>
+        }
+    }
+
+    useEffect(() => {
+
+    }, [features])
 
     return (
         <div className="App">
             <div className="Map">
                 <Map features={features} metadata={metadata}/>
             </div>
+            {renderImporter()} 
         </div>
     );
 }

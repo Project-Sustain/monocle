@@ -59,11 +59,87 @@ END OF TERMS AND CONDITIONS
 */
 
 import React, { useState } from 'react';
-import { Modal } from '@material-ui/core';
+import { Grid, Modal, Paper } from '@material-ui/core';
 import './ImportMapData.css';
+import MetadataEntry from '../types/MetadataEntry';
 
-export default function ImportMapData() {
+interface ImportMapDataProps {
+    setFeatures: React.Dispatch<React.SetStateAction<GeoJSON.Feature<GeoJSON.Geometry, GeoJSON.GeoJsonProperties>[]>>,
+    setDataImported: React.Dispatch<React.SetStateAction<boolean>>
+}
+
+enum Validity {
+    none,
+    invalid,
+    valid
+}
+
+export default function ImportMapData({ setFeatures, setDataImported }: ImportMapDataProps) {
+    const [valid, setValid] = useState(Validity.none as Validity)
+    const acceptableTypes = [".json",".geojson",".JSON",".GEOJSON",".GeoJSON"];
+
+    const importGeoJSON = (json: any) => {
+        //validate the json
+        if(typeof json !== 'object') {
+            setValid(Validity.invalid)
+            return;
+        }
+        if(Array.isArray(json)) {
+            for(const entry of json) {
+                if(!entry.geometry) {
+                    return;
+                    setValid(Validity.invalid)
+                }
+            }
+            setValid(Validity.valid)
+            setFeatures(json)
+            setDataImported(true)
+            return;
+        }
+    } 
+
     return (
-        <></>
+        <Paper className="importerRoot">
+            <Grid container className="importerContainer">
+                <Grid item xs={12}>
+                    <input
+                        onInput={(e) => {
+                            const target = e.target as HTMLInputElement;
+                            const file = target.files?.[0]
+                            if(!file){
+                                return;
+                            }
+                            const reader = new FileReader();
+                            reader.readAsText(file, "UTF-8");
+                            reader.onload = function (fsE) {
+                                if(fsE && fsE.target?.result && typeof fsE?.target?.result === 'string'){
+                                    const fileContents = fsE.target.result;
+                                    try {
+                                        const geojson = JSON.parse(fileContents);
+                                        importGeoJSON(geojson)
+                                    }
+                                    catch {
+                                        setValid(Validity.invalid)
+                                    }
+                                    return;
+                                }
+                                setValid(Validity.invalid)
+                            }
+                            reader.onerror = function (evt) {
+                                setValid(Validity.invalid)
+                                console.error("shit")
+                            }
+                        }}
+                        id="geojsonInput"
+                        name="Select GeoJSON"
+                        type="file"
+                        accept={acceptableTypes.join(',')}
+                    />
+                </Grid>
+                <Grid item xs={12}>
+
+                </Grid>
+            </Grid>
+        </Paper>
     );
 }
