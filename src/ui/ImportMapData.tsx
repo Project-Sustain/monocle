@@ -59,21 +59,11 @@ END OF TERMS AND CONDITIONS
 */
 
 import React, { useState } from 'react';
-import logo from './logo.svg';
-import './App.css';
-import Map from './map/Map';
-import MetadataEntry from './types/MetadataEntry';
+import { Modal } from '@material-ui/core';
+import './ImportMapData.css';
 
-export default function App() {
-    const [features, setFeatures] = useState([] as GeoJSON.Feature[])
-    const [metadata, setMetadata] = useState([] as MetadataEntry[])
-
+export default function ImportMapData() {
     return (
-        <div className="App">
-            <div className="Map">
-                <Map features={features} metadata={metadata}/>
-            </div>
-        </div>
+        <></>
     );
 }
-
