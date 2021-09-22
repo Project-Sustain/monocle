@@ -62,7 +62,7 @@ import React, { useState, useEffect } from 'react';
 import logo from './logo.svg';
 import './App.css';
 import Map from './map/Map';
-import MetadataEntry from './types/MetadataEntry';
+import MetadataEntries, { MetadataType } from './types/MetadataEntries';
 import ImportMapData from './ui/ImportMapData';
 import L from 'leaflet'
 import bbox from '@turf/bbox';
@@ -70,7 +70,7 @@ import { MapContainer } from 'react-leaflet';
 
 export default function App() {
     const [features, setFeatures] = useState([] as GeoJSON.Feature[])
-    const [metadata, setMetadata] = useState([] as MetadataEntry[])
+    const [metadata, setMetadata] = useState({} as MetadataEntries)
     const [dataBounds, setDataBounds] = useState(null as unknown as L.LatLngBounds)
     const [dataImported, setDataImported] = useState(false as boolean)
 
@@ -80,6 +80,13 @@ export default function App() {
         }
     }
 
+    const getType = (value: any): MetadataType => {
+        if(typeof value === 'number') {
+            return 'quantitative'
+        }
+        return 'categorical'
+    }
+
     useEffect(() => {
         if (features.length) {
             const bboxF = bbox({
@@ -87,13 +94,57 @@ export default function App() {
                 features
             })
             setDataBounds(L.latLngBounds(L.latLng(bboxF[1], bboxF[0]), L.latLng(bboxF[3], bboxF[2])))
+            const newMetadata: MetadataEntries = {}
+            for (const feature of features) {
+                //console.log(feature.properties)
+                if (feature.properties) {
+                    for (let [key, value] of Object.entries(feature.properties)) {
+                        if(!value) {
+                            continue;
+                        }
+                        const valueType = getType(value)
+                        if(valueType === 'categorical' && typeof value !== 'string') {
+                            value = JSON.stringify(value)
+                        }
+
+                        if(!newMetadata[key]) {
+                            if(valueType === 'quantitative') {
+                                newMetadata[key] = { 
+                                    meta: [value as number, value as number],
+                                    type: valueType
+                                } 
+                            }
+                            else {
+                                newMetadata[key] = {
+                                    meta: [value as string],
+                                    type: valueType
+                                }
+                            }
+                        }
+                        else {
+                            if(valueType === 'quantitative') {
+                                const currentMinMax = newMetadata[key].meta as unknown as number[];
+                                if(value < currentMinMax[0]) {
+                                    currentMinMax[0] = value;
+                                }
+                                else if(value > currentMinMax[1]) {
+                                    currentMinMax[1] = value;
+                                }
+                            }
+                            else {
+                                newMetadata[key].meta = Array.from(new Set<string>([...newMetadata[key].meta, value as string]));                            }
+                        }
+                    }
+                }
+            }
+            setMetadata(newMetadata)
         }
     }, [features])
 
     return (
         <div className="App">
             <div className="Map">
-                <MapContainer center={[40.5, -105.5]} zoom={8}>
+                <MapContainer center={[40.5, -105.5]} zoom={4}>
                     <Map features={features} metadata={metadata} dataBounds={dataBounds} />
                 </MapContainer>
             </div>

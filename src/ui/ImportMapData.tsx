@@ -61,7 +61,6 @@ END OF TERMS AND CONDITIONS
 import React, { useState } from 'react';
 import { Grid, Modal, Paper } from '@material-ui/core';
 import './ImportMapData.css';
-import MetadataEntry from '../types/MetadataEntry';
 
 interface ImportMapDataProps {
     setFeatures: React.Dispatch<React.SetStateAction<GeoJSON.Feature<GeoJSON.Geometry, GeoJSON.GeoJsonProperties>[]>>,

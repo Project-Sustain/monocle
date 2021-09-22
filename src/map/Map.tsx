@@ -64,12 +64,12 @@ import { TileLayer, Marker, Popup, GeoJSON, useMap } from 'react-leaflet'
 import L from 'leaflet'
 import './Map.css';
 import 'leaflet/dist/leaflet.css';
-import MetadataEntry from '../types/MetadataEntry'
+import MetadataEntries from '../types/MetadataEntries'
 
 
 interface MapProps {
     features: GeoJSON.Feature[],
-    metadata: MetadataEntry[],
+    metadata: MetadataEntries,
     dataBounds: L.LatLngBounds
 }
 
