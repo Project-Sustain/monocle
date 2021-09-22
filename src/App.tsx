@@ -64,29 +64,40 @@ import './App.css';
 import Map from './map/Map';
 import MetadataEntry from './types/MetadataEntry';
 import ImportMapData from './ui/ImportMapData';
+import L from 'leaflet'
+import bbox from '@turf/bbox';
+import { MapContainer } from 'react-leaflet';
 
 export default function App() {
     const [features, setFeatures] = useState([] as GeoJSON.Feature[])
     const [metadata, setMetadata] = useState([] as MetadataEntry[])
-    const [bbox, setBbox] = useState(null as unknown as GeoJSON.BBox) 
+    const [dataBounds, setDataBounds] = useState(null as unknown as L.LatLngBounds)
     const [dataImported, setDataImported] = useState(false as boolean)
 
     const renderImporter = () => {
-        if(!dataImported) {
-            return <ImportMapData {...{setFeatures, setMetadata, setDataImported}}/>
+        if (!dataImported) {
+            return <ImportMapData {...{ setFeatures, setMetadata, setDataImported }} />
         }
     }
 
     useEffect(() => {
-
+        if (features.length) {
+            const bboxF = bbox({
+                type: "FeatureCollection",
+                features
+            })
+            setDataBounds(L.latLngBounds(L.latLng(bboxF[1], bboxF[0]), L.latLng(bboxF[3], bboxF[2])))
+        }
     }, [features])
 
     return (
         <div className="App">
             <div className="Map">
-                <Map features={features} metadata={metadata}/>
+                <MapContainer center={[40.5, -105.5]} zoom={8}>
+                    <Map features={features} metadata={metadata} dataBounds={dataBounds} />
+                </MapContainer>
             </div>
-            {renderImporter()} 
+            {renderImporter()}
         </div>
     );
 }

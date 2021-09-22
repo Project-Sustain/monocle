@@ -58,9 +58,10 @@ You may add Your own copyright statement to Your modifications and may provide a
 END OF TERMS AND CONDITIONS
 */
 
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import logo from './logo.svg';
-import { MapContainer, TileLayer, Marker, Popup, GeoJSON } from 'react-leaflet'
+import { TileLayer, Marker, Popup, GeoJSON, useMap } from 'react-leaflet'
+import L from 'leaflet'
 import './Map.css';
 import 'leaflet/dist/leaflet.css';
 import MetadataEntry from '../types/MetadataEntry'
@@ -68,24 +69,34 @@ import MetadataEntry from '../types/MetadataEntry'
 
 interface MapProps {
     features: GeoJSON.Feature[],
-    metadata: MetadataEntry[]
+    metadata: MetadataEntry[],
+    dataBounds: L.LatLngBounds
 }
 
-export default React.memo(function Map({features, metadata}: MapProps) {
+let geojsonKey = 0;
+export default React.memo(function Map({ features, metadata, dataBounds }: MapProps) {
     const renderGeoJSON = () => {
-        for(const feature of features) {
-            return <GeoJSON data={feature} />
-        }
+        return features.map(feature =>
+            <GeoJSON data={feature} key={geojsonKey++} />
+        );
     }
 
+    const map = useMap();
+
+    useEffect(() => {
+        if(dataBounds) {
+            map.flyToBounds(dataBounds);
+        }
+    }, [dataBounds])
+
     return (
-        <MapContainer center={[40.5, -105.5]} zoom={8}>
+        <>
             <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
                 url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
             />
             {renderGeoJSON()}
-        </MapContainer>
+        </>
     );
 })
 
