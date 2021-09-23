@@ -58,9 +58,10 @@ You may add Your own copyright statement to Your modifications and may provide a
 END OF TERMS AND CONDITIONS
 */
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import './Inspector.css';
-import { Paper, TableContainer, Table, TableHead, TableRow, TableCell, TableBody } from '@material-ui/core';
+import { Paper, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Input, InputAdornment } from '@material-ui/core';
+import SearchIcon from '@mui/icons-material/Search';
 
 
 
@@ -70,8 +71,10 @@ interface InspectorProps {
 }
 
 export default React.memo(function Inspector({ setInspectorOpen, inspecting }: InspectorProps) {
+    const [filterValue, setFilterValue] = useState('')
+
     const getRenderableValue = (value: any) => {
-        if (["string","number"].includes(typeof value)) {
+        if (["string", "number"].includes(typeof value)) {
             return value;
         }
         return JSON.stringify(value)
@@ -81,7 +84,10 @@ export default React.memo(function Inspector({ setInspectorOpen, inspecting }: I
         if (!inspecting.properties) {
             return;
         }
-        return Object.entries(inspecting.properties).map(([key, value]) => {
+        return Object.entries(inspecting.properties).filter(([key,value]) => {
+            const regexp = new RegExp(filterValue, 'ig');
+            return regexp.test(key) || regexp.test(JSON.stringify(value))
+        }).map(([key, value]) => {
             return (
                 <TableRow key={key}>
                     <TableCell>
@@ -94,25 +100,43 @@ export default React.memo(function Inspector({ setInspectorOpen, inspecting }: I
         })
     }
 
+    const renderTable = () => {
+        return (
+            <Paper>
+                <Input
+                    style={{width: "100%"}}
+                    startAdornment={
+                        <InputAdornment position="start">
+                            <SearchIcon />
+                        </InputAdornment>
+                    }
+                    onChange={(e) => setFilterValue(e.target.value)}
+                    value={filterValue}
+                />
+                <TableContainer component={Paper} style={{width: "100%"}}>
+                    <Table>
+                        <TableHead>
+                            <TableRow>
+                                <TableCell>
+                                    Property
+                                </TableCell>
+                                <TableCell>
+                                    Value
+                                </TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {renderTableRows()}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+            </Paper>
+        )
+    }
+
     return (
         <Paper className="inspectorRoot">
-            <TableContainer component={Paper}>
-                <Table>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell>
-                                Property
-                            </TableCell>
-                            <TableCell>
-                                Value
-                            </TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {renderTableRows()}
-                    </TableBody>
-                </Table>
-            </TableContainer>
+            {renderTable()}
         </Paper>
     );
 })
