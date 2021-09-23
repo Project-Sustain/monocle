@@ -72,19 +72,19 @@ interface MapProps {
     features: GeoJSON.Feature[],
     metadata: MetadataEntries,
     dataBounds: L.LatLngBounds,
-    colorKey: string,
+    focusedKey: string,
     setInspecting: React.Dispatch<React.SetStateAction<GeoJSON.Feature<GeoJSON.Geometry, GeoJSON.GeoJsonProperties>>>
 }
 
 let geojsonKey = 0;
-export default React.memo(function Map({ features, metadata, dataBounds, colorKey, setInspecting }: MapProps) {
+export default React.memo(function Map({ features, metadata, dataBounds, focusedKey, setInspecting }: MapProps) {
     const renderGeoJSON = () => {
         return features.map(feature => {
-            const metadataEntry = metadata[colorKey];
+            const metadataEntry = metadata[focusedKey];
             let style = {}
             if(metadataEntry) {
                 style = {
-                    color: GetColor(metadataEntry.meta, feature?.properties?.[colorKey])
+                    color: GetColor(metadataEntry.meta, feature?.properties?.[focusedKey])
                 }
             }
             return <GeoJSON data={feature} key={geojsonKey++} style={style} eventHandlers={{

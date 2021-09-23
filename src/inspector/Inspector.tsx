@@ -60,17 +60,22 @@ END OF TERMS AND CONDITIONS
 
 import React, { useEffect, useRef, useState } from 'react';
 import './Inspector.css';
-import { Paper, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Input, InputAdornment } from '@material-ui/core';
+import { Paper, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Input, InputAdornment, Grid, IconButton, Typography } from '@material-ui/core';
 import SearchIcon from '@mui/icons-material/Search';
+import CloseIcon from '@mui/icons-material/Close';
+import MetadataEntries from '../types/MetadataEntries';
 
 
 
 interface InspectorProps {
     setInspectorOpen: React.Dispatch<React.SetStateAction<boolean>>,
-    inspecting: GeoJSON.Feature
+    inspecting: GeoJSON.Feature,
+    metadata: MetadataEntries,
+    focusedKey: string,
+    setFocusedKey: React.Dispatch<React.SetStateAction<string>>
 }
 
-export default React.memo(function Inspector({ setInspectorOpen, inspecting }: InspectorProps) {
+export default React.memo(function Inspector({ setInspectorOpen, inspecting, metadata, focusedKey, setFocusedKey }: InspectorProps) {
     const [filterValue, setFilterValue] = useState('')
 
     const getRenderableValue = (value: any) => {
@@ -84,7 +89,7 @@ export default React.memo(function Inspector({ setInspectorOpen, inspecting }: I
         if (!inspecting.properties) {
             return;
         }
-        return Object.entries(inspecting.properties).filter(([key,value]) => {
+        return Object.entries(inspecting.properties).filter(([key, value]) => {
             const regexp = new RegExp(filterValue, 'ig');
             return regexp.test(key) || regexp.test(JSON.stringify(value))
         }).map(([key, value]) => {
@@ -104,7 +109,7 @@ export default React.memo(function Inspector({ setInspectorOpen, inspecting }: I
         return (
             <Paper>
                 <Input
-                    style={{width: "100%"}}
+                    style={{ width: "100%" }}
                     startAdornment={
                         <InputAdornment position="start">
                             <SearchIcon />
@@ -113,7 +118,7 @@ export default React.memo(function Inspector({ setInspectorOpen, inspecting }: I
                     onChange={(e) => setFilterValue(e.target.value)}
                     value={filterValue}
                 />
-                <TableContainer component={Paper} style={{width: "100%"}}>
+                <TableContainer component={Paper} style={{ width: "100%" }}>
                     <Table>
                         <TableHead>
                             <TableRow>
@@ -134,8 +139,37 @@ export default React.memo(function Inspector({ setInspectorOpen, inspecting }: I
         )
     }
 
+    const renderFocusedKey = () => {
+        if (!focusedKey) {
+            return;
+        }
+        return (
+            <Paper>
+                <Grid container style={{ width: '100%' }}>
+                    <Grid item xs={12}>
+                        <Typography variant='h6'>
+                            {focusedKey}
+                        </Typography>
+                        
+                    </Grid>
+                </Grid>
+            </Paper>
+        );
+    }
+
     return (
         <Paper className="inspectorRoot">
+            <Paper>
+                <Grid container style={{ width: '100%' }}>
+                    <Grid item xs={11}></Grid>
+                    <Grid item xs={1}>
+                        <IconButton onClick={() => setInspectorOpen(false)}>
+                            <CloseIcon />
+                        </IconButton>
+                    </Grid>
+                </Grid>
+            </Paper>
+            {renderFocusedKey()}
             {renderTable()}
         </Paper>
     );

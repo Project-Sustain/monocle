@@ -74,7 +74,7 @@ export default function App() {
     const [metadata, setMetadata] = useState({} as MetadataEntries)
     const [dataBounds, setDataBounds] = useState(null as unknown as L.LatLngBounds)
     const [dataImported, setDataImported] = useState(false as boolean)
-    const [colorKey, setColorKey] = useState(null as unknown as string)
+    const [focusedKey, setFocusedKey] = useState(null as unknown as string)
     const [inspectorOpen, setInspectorOpen] = useState(false as boolean);
     const [inspecting, setInspecting] = useState(null as unknown as GeoJSON.Feature)
 
@@ -86,7 +86,7 @@ export default function App() {
 
     const renderInspector = () => {
         if(inspectorOpen) {
-            return <Inspector {...{inspecting, setInspectorOpen}}/>
+            return <Inspector {...{inspecting, setInspectorOpen, metadata, focusedKey, setFocusedKey}}/>
         }
     }
 
@@ -153,7 +153,7 @@ export default function App() {
                 }
             }
             setMetadata(newMetadata)
-            setColorKey(Object.keys(newMetadata)[0])
+            setFocusedKey(Object.keys(newMetadata)[0])
         }
     }, [features])
 
@@ -161,7 +161,7 @@ export default function App() {
         <div className="App">
             <div className="Map">
                 <MapContainer center={[40.5, -105.5]} zoom={4}>
-                    <Map {...{features, metadata, dataBounds, colorKey, setInspecting}}/>
+                    <Map {...{features, metadata, dataBounds, focusedKey, setInspecting}}/>
                 </MapContainer>
             </div>
             {renderImporter()}
