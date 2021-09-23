@@ -65,26 +65,36 @@ import L from 'leaflet'
 import './Map.css';
 import 'leaflet/dist/leaflet.css';
 import MetadataEntries from '../types/MetadataEntries'
+import GetColor from '../lib/GetColor';
 
 
 interface MapProps {
     features: GeoJSON.Feature[],
     metadata: MetadataEntries,
-    dataBounds: L.LatLngBounds
+    dataBounds: L.LatLngBounds,
+    colorKey: string
 }
 
 let geojsonKey = 0;
-export default React.memo(function Map({ features, metadata, dataBounds }: MapProps) {
+export default React.memo(function Map({ features, metadata, dataBounds, colorKey }: MapProps) {
     const renderGeoJSON = () => {
-        return features.map(feature =>
-            <GeoJSON data={feature} key={geojsonKey++} />
+        return features.map(feature => {
+            const metadataEntry = metadata[colorKey];
+            let style = {}
+            if(metadataEntry) {
+                style = {
+                    color: GetColor(metadataEntry.meta, feature?.properties?.[colorKey])
+                }
+            }
+            return <GeoJSON data={feature} key={geojsonKey++} style={style} />
+        }
         );
     }
 
     const map = useMap();
 
     useEffect(() => {
-        if(dataBounds) {
+        if (dataBounds) {
             map.flyToBounds(dataBounds);
         }
     }, [dataBounds])

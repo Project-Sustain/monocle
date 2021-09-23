@@ -73,6 +73,7 @@ export default function App() {
     const [metadata, setMetadata] = useState({} as MetadataEntries)
     const [dataBounds, setDataBounds] = useState(null as unknown as L.LatLngBounds)
     const [dataImported, setDataImported] = useState(false as boolean)
+    const [colorKey, setColorKey] = useState(null as unknown as string)
 
     const renderImporter = () => {
         if (!dataImported) {
@@ -96,7 +97,6 @@ export default function App() {
             setDataBounds(L.latLngBounds(L.latLng(bboxF[1], bboxF[0]), L.latLng(bboxF[3], bboxF[2])))
             const newMetadata: MetadataEntries = {}
             for (const feature of features) {
-                //console.log(feature.properties)
                 if (feature.properties) {
                     for (let [key, value] of Object.entries(feature.properties)) {
                         if(!value) {
@@ -138,6 +138,7 @@ export default function App() {
                 }
             }
             setMetadata(newMetadata)
+            setColorKey(Object.keys(newMetadata)[0])
         }
     }, [features])
 
@@ -145,7 +146,7 @@ export default function App() {
         <div className="App">
             <div className="Map">
                 <MapContainer center={[40.5, -105.5]} zoom={4}>
-                    <Map features={features} metadata={metadata} dataBounds={dataBounds} />
+                    <Map features={features} metadata={metadata} dataBounds={dataBounds} colorKey={colorKey}/>
                 </MapContainer>
             </div>
             {renderImporter()}

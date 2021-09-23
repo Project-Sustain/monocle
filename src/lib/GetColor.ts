@@ -69,8 +69,9 @@ const colorGrad = createColormap({
     format: 'hex',
     alpha: 1
 })
+const nullColor = '#adadad'
 
-export default function GetColor(meta: MetadataMetaType, value: string | number) {
+export default function GetColor(meta: MetadataMetaType, value: string | number | null | undefined) {
     if(typeof value === 'string') {
         const colorGrad = createColormap({
             colormap: 'rainbow-soft',
@@ -84,8 +85,9 @@ export default function GetColor(meta: MetadataMetaType, value: string | number)
             return colorGrad[indexOfValue]
         }
     }
-    else {
+    else if(typeof value === 'number'){
         const metaTyped = meta as FixedLengthArray<[number,number]>;
         return colorGrad[Math.max(Math.min(Math.floor(nshades * (value - metaTyped[0]) / (metaTyped[1] - metaTyped[0])), nshades - 1), 0)]
     }
+    return nullColor;
 }
