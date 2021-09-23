@@ -86,7 +86,7 @@ export default function App() {
 
     const renderInspector = () => {
         if(inspectorOpen) {
-            <Inspector {...{inspecting, setInspectorOpen}}/>
+            return <Inspector {...{inspecting, setInspectorOpen}}/>
         }
     }
 

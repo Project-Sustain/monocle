@@ -60,6 +60,7 @@ END OF TERMS AND CONDITIONS
 
 import React, { useEffect, useRef } from 'react';
 import './Inspector.css';
+import { Paper, TableContainer, Table, TableHead, TableRow, TableCell, TableBody } from '@material-ui/core';
 
 
 
@@ -69,8 +70,50 @@ interface InspectorProps {
 }
 
 export default React.memo(function Inspector({ setInspectorOpen, inspecting }: InspectorProps) {
+    const getRenderableValue = (value: any) => {
+        if (["string","number"].includes(typeof value)) {
+            return value;
+        }
+        return JSON.stringify(value)
+    }
+
+    const renderTableRows = () => {
+        if (!inspecting.properties) {
+            return;
+        }
+        return Object.entries(inspecting.properties).map(([key, value]) => {
+            return (
+                <TableRow key={key}>
+                    <TableCell>
+                        {key}
+                    </TableCell>
+                    <TableCell>
+                        {getRenderableValue(value)}
+                    </TableCell>
+                </TableRow>);
+        })
+    }
+
     return (
-        <div/>
+        <Paper className="inspectorRoot">
+            <TableContainer component={Paper}>
+                <Table>
+                    <TableHead>
+                        <TableRow>
+                            <TableCell>
+                                Property
+                            </TableCell>
+                            <TableCell>
+                                Value
+                            </TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {renderTableRows()}
+                    </TableBody>
+                </Table>
+            </TableContainer>
+        </Paper>
     );
 })
 

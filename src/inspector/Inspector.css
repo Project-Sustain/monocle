@@ -1,0 +1,9 @@
+.inspectorRoot {
+    z-index: 10000;
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 30vw;
+    height: 100vh;
+    overflow: scroll;
+}
