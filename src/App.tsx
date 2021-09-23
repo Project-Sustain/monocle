@@ -98,6 +98,12 @@ export default function App() {
     }
 
     useEffect(() => {
+        if(inspecting) {
+            setInspectorOpen(true);
+        }
+    }, [inspecting])
+
+    useEffect(() => {
         if (features.length) {
             const bboxF = bbox({
                 type: "FeatureCollection",
@@ -155,7 +161,7 @@ export default function App() {
         <div className="App">
             <div className="Map">
                 <MapContainer center={[40.5, -105.5]} zoom={4}>
-                    <Map features={features} metadata={metadata} dataBounds={dataBounds} colorKey={colorKey}/>
+                    <Map {...{features, metadata, dataBounds, colorKey, setInspecting}}/>
                 </MapContainer>
             </div>
             {renderImporter()}
