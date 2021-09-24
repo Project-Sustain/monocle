@@ -100,7 +100,7 @@ export default React.memo(function Map({ features, metadata, dataBounds, focused
 
     useEffect(() => {
         if (dataBounds) {
-            map.flyToBounds(dataBounds);
+            map.fitBounds(dataBounds)
         }
     }, [dataBounds])
 

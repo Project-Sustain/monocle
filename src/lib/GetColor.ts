@@ -73,12 +73,21 @@ const nullColor = '#adadad'
 
 export default function GetColor(meta: MetadataMetaType, value: string | number | null | undefined) {
     if(typeof value === 'string') {
-        const colorGrad = createColormap({
+        const minColors = 12
+        let colorGrad = createColormap({
             colormap: 'rainbow-soft',
-            nshades: meta.length,
+            nshades: meta.length >= minColors ? meta.length : minColors,
             format: 'hex',
             alpha: 1
         })
+        if(meta.length < minColors) {
+            colorGrad = colorGrad.filter((e,i) => {
+                if(i % Math.floor(minColors / meta.length)) {
+                    return true;
+                }
+                return false;
+            })
+        }
         const metaTyped = meta as string[]
         const indexOfValue = metaTyped.indexOf(value as string)
         if(indexOfValue !== -1) {

@@ -64,6 +64,8 @@ import { Paper, TableContainer, Table, TableHead, TableRow, TableCell, TableBody
 import SearchIcon from '@mui/icons-material/Search';
 import CloseIcon from '@mui/icons-material/Close';
 import MetadataEntries from '../types/MetadataEntries';
+import GetColor from '../lib/GetColor';
+import { nodeModuleNameResolver } from 'typescript';
 
 
 
@@ -96,7 +98,9 @@ export default React.memo(function Inspector({ setInspectorOpen, inspecting, met
             return regexp.test(key) || regexp.test(JSON.stringify(value))
         }).map(([key, value]) => {
             return (
-                <TableRow key={key}>
+                <TableRow key={key} onClick={() => {
+                    setFocusedKey(key)
+                }}>
                     <TableCell>
                         {key}
                     </TableCell>
@@ -141,18 +145,67 @@ export default React.memo(function Inspector({ setInspectorOpen, inspecting, met
         )
     }
 
+    const colorDiv = (color: string) => {
+        return (<div style={{
+            backgroundColor: color,
+            border: '2px solid black',
+            height: '25px',
+            borderRadius: '4px'
+        }} />);
+    }
+
     const renderFocusedKey = () => {
-        if (!focusedKey) {
-            return;
+        const metadataFocusedKey = metadata[focusedKey]
+        if (!focusedKey || !inspecting || !metadataFocusedKey) {
+            return <Paper className="inspectorModule" elevation={moduleElevation}>
+                No information was found for {focusedKey}.
+            </Paper>;
         }
         return (
             <Paper className="inspectorModule" elevation={moduleElevation}>
                 <Grid container style={{ width: '100%' }}>
                     <Grid item xs={12}>
                         <Typography variant='h6'>
-                            {focusedKey}
+                            {`Focusing on: ${focusedKey}`}
                         </Typography>
-                        
+                    </Grid>
+                    <Grid item xs={12}>
+                        <TableContainer component={Paper} style={{ width: "100%" }} elevation={moduleElevation}>
+                            <Table>
+                                <TableBody>
+                                    <TableRow>
+                                        <TableCell>
+                                            Value
+                                        </TableCell>
+                                        <TableCell>
+                                            {getRenderableValue(inspecting?.properties?.[focusedKey])}
+                                        </TableCell>
+                                    </TableRow>
+                                    <TableRow>
+                                        <TableCell>
+                                            {metadataFocusedKey.type === "quantitative" ? "Range" : "Number of Unique Values"}
+                                        </TableCell>
+                                        <TableCell>
+                                            {metadataFocusedKey.type === "quantitative" ? JSON.stringify(metadataFocusedKey.meta) : metadataFocusedKey.meta.length}
+                                        </TableCell>
+                                    </TableRow>
+                                    <TableRow>
+                                        <TableCell>
+                                            Color
+                                        </TableCell>
+                                        <TableCell>
+                                            {colorDiv(GetColor(metadataFocusedKey.meta, inspecting?.properties?.[focusedKey]))}
+                                        </TableCell>
+                                    </TableRow>
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
+                    </Grid>
+                    <Grid item xs={12}>
+                        <Paper elevation={moduleElevation}>
+                            <Typography>Color in Context</Typography>
+
+                        </Paper>
                     </Grid>
                 </Grid>
             </Paper>
