@@ -75,6 +75,8 @@ interface InspectorProps {
     setFocusedKey: React.Dispatch<React.SetStateAction<string>>
 }
 
+const moduleElevation = 6;
+
 export default React.memo(function Inspector({ setInspectorOpen, inspecting, metadata, focusedKey, setFocusedKey }: InspectorProps) {
     const [filterValue, setFilterValue] = useState('')
 
@@ -107,7 +109,7 @@ export default React.memo(function Inspector({ setInspectorOpen, inspecting, met
 
     const renderTable = () => {
         return (
-            <Paper>
+            <Paper className="inspectorModule" elevation={moduleElevation}>
                 <Input
                     style={{ width: "100%" }}
                     startAdornment={
@@ -144,7 +146,7 @@ export default React.memo(function Inspector({ setInspectorOpen, inspecting, met
             return;
         }
         return (
-            <Paper>
+            <Paper className="inspectorModule" elevation={moduleElevation}>
                 <Grid container style={{ width: '100%' }}>
                     <Grid item xs={12}>
                         <Typography variant='h6'>
@@ -158,8 +160,8 @@ export default React.memo(function Inspector({ setInspectorOpen, inspecting, met
     }
 
     return (
-        <Paper className="inspectorRoot">
-            <Paper>
+        <Paper className="inspectorRoot" elevation={4}>
+            <Paper className="inspectorModule" elevation={moduleElevation}>
                 <Grid container style={{ width: '100%' }}>
                     <Grid item xs={11}></Grid>
                     <Grid item xs={1}>

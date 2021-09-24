@@ -6,4 +6,10 @@
     width: 30vw;
     height: 100vh;
     overflow: scroll;
+    border-radius: 0;
+}
+
+.inspectorModule {
+    margin: 1vw;
+    padding: 20px;
 }
