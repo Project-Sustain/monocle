@@ -60,7 +60,7 @@ END OF TERMS AND CONDITIONS
 
 import React, { useEffect, useRef, useState } from 'react';
 import './Inspector.css';
-import { Paper, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Input, InputAdornment, Grid, IconButton, Typography } from '@material-ui/core';
+import { Paper, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Input, InputAdornment, Grid, IconButton, Typography, Divider } from '@material-ui/core';
 import SearchIcon from '@mui/icons-material/Search';
 import CloseIcon from '@mui/icons-material/Close';
 import MetadataEntries from '../types/MetadataEntries';
@@ -157,10 +157,10 @@ export default React.memo(function Inspector({ setInspectorOpen, inspecting, met
     const renderColorInContext = () => {
         const metadataFocusedKey = metadata[focusedKey]
         if (metadataFocusedKey.type === 'quantitative') {
-            const metaTyped = metadata[focusedKey].meta as FixedLengthArray<[number,number]>;
+            const metaTyped = metadata[focusedKey].meta as FixedLengthArray<[number, number]>;
             return <Grid container>
                 <Grid item xs={12}>
-                    <div style={{height: '10px', margin: '10px 10px 0px 10px'}}>
+                    <div style={{ height: '10px', margin: '10px 10px 0px 10px' }}>
                         <div style={{
                             position: 'absolute',
                             transform: `translate(${(inspecting?.properties?.[focusedKey] - metaTyped[0]) / (metaTyped[1] - metaTyped[0]) * 22.3 - 0.3}vw,-10px) scale(1,2.5)`
@@ -168,26 +168,25 @@ export default React.memo(function Inspector({ setInspectorOpen, inspecting, met
                     </div>
                 </Grid>
                 <Grid item xs={12}>
-                <div style={{
-                    backgroundImage: `linear-gradient(to right, ${qColorGrad.toString()})`,
-                    height: '75px',
-                    margin: '0 10px 10px 10px',
-                    borderRadius: '4px',
-                    border: '2px solid black'
-                }}></div>
+                    <div style={{
+                        backgroundImage: `linear-gradient(to right, ${qColorGrad.toString()})`,
+                        height: '75px',
+                        margin: '0 10px 10px 10px',
+                        borderRadius: '4px',
+                        border: '2px solid black'
+                    }}></div>
                 </Grid>
             </Grid>
         }
         const metaTyped = metadata[focusedKey].meta as string[];
         return (
             <TableContainer component={Paper} style={{
-                maxHeight: '40vh',
-                overflow: 'scroll'
+                maxHeight: '40vh'
             }}>
                 <Table>
                     <TableBody>
                         {metaTyped.sort().map(key => {
-                            return <TableRow style={{backgroundColor: inspecting?.properties?.[focusedKey] === key ? '#adadad' : '#ffffff'}} key={key}>
+                            return <TableRow style={{ backgroundColor: inspecting?.properties?.[focusedKey] === key ? '#adadad' : '#ffffff' }} key={key}>
                                 <TableCell>
                                     {key}
                                 </TableCell>
@@ -249,9 +248,11 @@ export default React.memo(function Inspector({ setInspectorOpen, inspecting, met
                             </Table>
                         </TableContainer>
                     </Grid>
+                    <Divider/>
                     <Grid item xs={12}>
-                        <Paper elevation={moduleElevation}>
+                        <Paper elevation={moduleElevation} style={{marginTop: '20px'}}>
                             <Typography>Color in Context</Typography>
+                            <Divider/>
                             {renderColorInContext()}
                         </Paper>
                     </Grid>
@@ -272,7 +273,9 @@ export default React.memo(function Inspector({ setInspectorOpen, inspecting, met
                     </Grid>
                 </Grid>
             </Paper>
+            <Divider/>
             {renderFocusedKey()}
+            <Divider/>
             {renderTable()}
         </Paper>
     );
