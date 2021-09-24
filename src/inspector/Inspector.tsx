@@ -66,6 +66,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import MetadataEntries from '../types/MetadataEntries';
 import GetColor, { qColorGrad } from '../lib/GetColor';
 import FixedLengthArray from '../types/FixedLengthArray';
+import useHover from '../customHooks/useHover';
 
 
 
@@ -81,6 +82,14 @@ const moduleElevation = 6;
 
 export default React.memo(function Inspector({ setInspectorOpen, inspecting, metadata, focusedKey, setFocusedKey }: InspectorProps) {
     const [filterValue, setFilterValue] = useState('')
+    const toScrollIntoView = useRef(null as unknown as HTMLElement | null)
+
+    useEffect(() => {
+        if(toScrollIntoView.current) {
+            toScrollIntoView.current.scrollIntoView();
+        }
+        toScrollIntoView.current = null;
+    }, [])
 
     const getRenderableValue = (value: any) => {
         if (["string", "number"].includes(typeof value)) {
@@ -98,9 +107,10 @@ export default React.memo(function Inspector({ setInspectorOpen, inspecting, met
             return regexp.test(key) || regexp.test(JSON.stringify(value))
         }).map(([key, value]) => {
             return (
-                <TableRow key={key} onClick={() => {
-                    setFocusedKey(key)
-                }}>
+                <TableRow key={key} onClick={(e) => {
+                    setFocusedKey(key);
+                    toScrollIntoView.current = e.target as HTMLElement;
+                }} className="inspectorTableRow" style={{backgroundColor: focusedKey === key ? '#adadad' : '#ffffff'}}>
                     <TableCell>
                         {key}
                     </TableCell>
@@ -234,6 +244,14 @@ export default React.memo(function Inspector({ setInspectorOpen, inspecting, met
                                         </TableCell>
                                         <TableCell>
                                             {metadataFocusedKey.type === "quantitative" ? JSON.stringify(metadataFocusedKey.meta) : metadataFocusedKey.meta.length}
+                                        </TableCell>
+                                    </TableRow>
+                                    <TableRow>
+                                        <TableCell>
+                                            Type
+                                        </TableCell>
+                                        <TableCell>
+                                            {metadataFocusedKey.type === "quantitative" ? 'Numerical / Quantitative' : 'String / Object / Categorical'}
                                         </TableCell>
                                     </TableRow>
                                     <TableRow>

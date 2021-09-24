@@ -13,3 +13,11 @@
     margin: 1vw;
     padding: 20px;
 }
+
+.inspectorTableRow {
+    cursor: pointer
+}
+
+.inspectorTableRow:hover {
+    background-color: #adadad !important;
+}
