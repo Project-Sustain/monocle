@@ -178,11 +178,24 @@ export default React.memo(function Inspector({ setInspectorOpen, inspecting, met
                 </Grid>
             </Grid>
         }
+        const metaTyped = metadata[focusedKey].meta as string[];
         return (
-            <TableContainer component={Paper}>
+            <TableContainer component={Paper} style={{
+                maxHeight: '40vh',
+                overflow: 'scroll'
+            }}>
                 <Table>
                     <TableBody>
-
+                        {metaTyped.sort().map(key => {
+                            return <TableRow style={{backgroundColor: inspecting?.properties?.[focusedKey] === key ? '#adadad' : '#ffffff'}} key={key}>
+                                <TableCell>
+                                    {key}
+                                </TableCell>
+                                <TableCell>
+                                    {colorDiv(GetColor(metaTyped, key))}
+                                </TableCell>
+                            </TableRow>
+                        })}
                     </TableBody>
                 </Table>
             </TableContainer>
