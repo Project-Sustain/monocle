@@ -63,7 +63,7 @@ import createColormap from "colormap";
 import FixedLengthArray from "../types/FixedLengthArray";
 
 const nshades = 100;
-const colorGrad = createColormap({
+export const qColorGrad = createColormap({
     colormap: 'jet',
     nshades,
     format: 'hex',
@@ -96,7 +96,7 @@ export default function GetColor(meta: MetadataMetaType, value: string | number 
     }
     else if(typeof value === 'number'){
         const metaTyped = meta as FixedLengthArray<[number,number]>;
-        return colorGrad[Math.max(Math.min(Math.floor(nshades * (value - metaTyped[0]) / (metaTyped[1] - metaTyped[0])), nshades - 1), 0)]
+        return qColorGrad[Math.max(Math.min(Math.floor(nshades * (value - metaTyped[0]) / (metaTyped[1] - metaTyped[0])), nshades - 1), 0)]
     }
     return nullColor;
 }

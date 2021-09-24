@@ -64,8 +64,8 @@ import { Paper, TableContainer, Table, TableHead, TableRow, TableCell, TableBody
 import SearchIcon from '@mui/icons-material/Search';
 import CloseIcon from '@mui/icons-material/Close';
 import MetadataEntries from '../types/MetadataEntries';
-import GetColor from '../lib/GetColor';
-import { nodeModuleNameResolver } from 'typescript';
+import GetColor, { qColorGrad } from '../lib/GetColor';
+import FixedLengthArray from '../types/FixedLengthArray';
 
 
 
@@ -154,6 +154,41 @@ export default React.memo(function Inspector({ setInspectorOpen, inspecting, met
         }} />);
     }
 
+    const renderColorInContext = () => {
+        const metadataFocusedKey = metadata[focusedKey]
+        if (metadataFocusedKey.type === 'quantitative') {
+            const metaTyped = metadata[focusedKey].meta as FixedLengthArray<[number,number]>;
+            return <Grid container>
+                <Grid item xs={12}>
+                    <div style={{height: '10px', margin: '10px 10px 0px 10px'}}>
+                        <div style={{
+                            position: 'absolute',
+                            transform: `translate(${(inspecting?.properties?.[focusedKey] - metaTyped[0]) / (metaTyped[1] - metaTyped[0]) * 22.3 - 0.3}vw,-10px) scale(1,2.5)`
+                        }}>▼</div>
+                    </div>
+                </Grid>
+                <Grid item xs={12}>
+                <div style={{
+                    backgroundImage: `linear-gradient(to right, ${qColorGrad.toString()})`,
+                    height: '75px',
+                    margin: '0 10px 10px 10px',
+                    borderRadius: '4px',
+                    border: '2px solid black'
+                }}></div>
+                </Grid>
+            </Grid>
+        }
+        return (
+            <TableContainer component={Paper}>
+                <Table>
+                    <TableBody>
+
+                    </TableBody>
+                </Table>
+            </TableContainer>
+        )
+    }
+
     const renderFocusedKey = () => {
         const metadataFocusedKey = metadata[focusedKey]
         if (!focusedKey || !inspecting || !metadataFocusedKey) {
@@ -204,7 +239,7 @@ export default React.memo(function Inspector({ setInspectorOpen, inspecting, met
                     <Grid item xs={12}>
                         <Paper elevation={moduleElevation}>
                             <Typography>Color in Context</Typography>
-
+                            {renderColorInContext()}
                         </Paper>
                     </Grid>
                 </Grid>
