@@ -83,6 +83,7 @@ export default React.memo(function Map({ features, metadata, dataBounds, focused
             const metadataEntry = metadata[focusedKey];
             let style = {}
             if(metadataEntry) {
+                console.log(metadataEntry.meta)
                 style = {
                     color: GetColor(metadataEntry.meta, feature?.properties?.[focusedKey])
                 }

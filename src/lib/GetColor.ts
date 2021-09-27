@@ -71,8 +71,11 @@ export const qColorGrad = createColormap({
 })
 const nullColor = '#adadad'
 
-export default function GetColor(meta: MetadataMetaType, value: string | number | null | undefined) {
-    if(typeof value === 'string') {
+export default function GetColor(meta: MetadataMetaType, value: string | number | null | undefined | object) {
+    if(typeof value === 'string' || typeof value === 'object') {
+        if(typeof value === 'object') {
+            value = JSON.stringify(value)
+        }
         const minColors = 12
         let colorGrad = createColormap({
             colormap: 'rainbow-soft',
