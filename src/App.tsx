@@ -104,6 +104,12 @@ export default function App() {
     }, [inspecting])
 
     useEffect(() => {
+        if(!inspectorOpen){
+            setInspecting(null as unknown as GeoJSON.Feature)
+        }
+    }, [inspectorOpen])
+
+    useEffect(() => {
         if (features.length) {
             const bboxF = bbox({
                 type: "FeatureCollection",

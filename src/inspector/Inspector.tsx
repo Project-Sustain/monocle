@@ -85,7 +85,7 @@ export default React.memo(function Inspector({ setInspectorOpen, inspecting, met
     const toScrollIntoView = useRef(null as unknown as HTMLElement | null)
 
     useEffect(() => {
-        if(toScrollIntoView.current) {
+        if (toScrollIntoView.current) {
             toScrollIntoView.current.scrollIntoView();
         }
         toScrollIntoView.current = null;
@@ -110,7 +110,7 @@ export default React.memo(function Inspector({ setInspectorOpen, inspecting, met
                 <TableRow key={key} onClick={(e) => {
                     setFocusedKey(key);
                     toScrollIntoView.current = e.target as HTMLElement;
-                }} className="inspectorTableRow" style={{backgroundColor: focusedKey === key ? '#adadad' : '#ffffff'}}>
+                }} className="inspectorTableRow" style={{ backgroundColor: focusedKey === key ? '#adadad' : '#ffffff' }}>
                     <TableCell>
                         {key}
                     </TableCell>
@@ -266,11 +266,11 @@ export default React.memo(function Inspector({ setInspectorOpen, inspecting, met
                             </Table>
                         </TableContainer>
                     </Grid>
-                    <Divider/>
+                    <Divider />
                     <Grid item xs={12}>
-                        <Paper elevation={moduleElevation} style={{marginTop: '20px'}}>
+                        <Paper elevation={moduleElevation} style={{ marginTop: '20px' }}>
                             <Typography>Color in Context</Typography>
-                            <Divider/>
+                            <Divider />
                             {renderColorInContext()}
                         </Paper>
                     </Grid>
@@ -281,19 +281,18 @@ export default React.memo(function Inspector({ setInspectorOpen, inspecting, met
 
     return (
         <Paper className="inspectorRoot" elevation={4}>
-            <Paper className="inspectorModule" elevation={moduleElevation}>
-                <Grid container style={{ width: '100%' }}>
-                    <Grid item xs={11}></Grid>
-                    <Grid item xs={1}>
-                        <IconButton onClick={() => setInspectorOpen(false)}>
-                            <CloseIcon />
-                        </IconButton>
-                    </Grid>
+            <Grid container style={{ width: '100%' }}>
+                <Grid item xs={10}></Grid>
+                <Grid item xs={2}>
+                    <IconButton onClick={() => setInspectorOpen(false)}>
+                        <CloseIcon />
+                    </IconButton>
                 </Grid>
-            </Paper>
-            <Divider/>
+            </Grid>
+
+            <Divider />
             {renderFocusedKey()}
-            <Divider/>
+            <Divider />
             {renderTable()}
         </Paper>
     );
