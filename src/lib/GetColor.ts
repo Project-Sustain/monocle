@@ -83,14 +83,6 @@ export default function GetColor(meta: MetadataMetaType, value: string | number 
             format: 'hex',
             alpha: 1
         })
-        if(meta.length < minColors) {
-            colorGrad = colorGrad.filter((e,i) => {
-                if(i % Math.floor(minColors / meta.length)) {
-                    return true;
-                }
-                return false;
-            })
-        }
         const metaTyped = meta as string[]
         const indexOfValue = metaTyped.indexOf(value as string)
         if(indexOfValue !== -1) {
@@ -99,7 +91,11 @@ export default function GetColor(meta: MetadataMetaType, value: string | number 
     }
     else if(typeof value === 'number'){
         const metaTyped = meta as FixedLengthArray<[number,number]>;
-        return qColorGrad[Math.max(Math.min(Math.floor(nshades * (value - metaTyped[0]) / (metaTyped[1] - metaTyped[0])), nshades - 1), 0)]
+        let index = Math.max(Math.min(Math.floor(nshades * (value - metaTyped[0]) / (metaTyped[1] - metaTyped[0])), nshades - 1), 0) ?? 0;
+        if(isNaN(index)) {
+            index = 0;
+        }
+        return qColorGrad[index]
     }
     return nullColor;
 }
