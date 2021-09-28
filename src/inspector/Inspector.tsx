@@ -94,6 +94,9 @@ export default React.memo(function Inspector({ setInspectorOpen, inspecting, met
     }, [])
 
     useEffect(() => {
+        if(metadata[focusedKey]?.type !== 'quantitative') {
+            return;
+        }
         const width = 350;
         const height = 85;
         const marginBottom = 20;
@@ -147,7 +150,6 @@ export default React.memo(function Inspector({ setInspectorOpen, inspecting, met
 
         const axis = d3.axisBottom(linearScale).ticks(5);
         svg.append('g').attr("transform", `translate(${marginLeftRight},${height - marginBottom})`).call(axis);
-
     }, [inspecting]);
 
     const getRenderableValue = (value: any) => {
