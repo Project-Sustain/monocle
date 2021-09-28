@@ -92,6 +92,8 @@ export default function ImportMapData({ setFeatures, setDataImported }: ImportMa
                 }
             }
             setValid(Validity.valid)
+            let unique = 0;
+            json.forEach(e => e.properties.unique = unique++)
             setFeatures(SortFeatureCollection(json))
             setDataImported(true)
             return;

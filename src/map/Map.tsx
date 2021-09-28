@@ -66,6 +66,7 @@ import './Map.css';
 import 'leaflet/dist/leaflet.css';
 import MetadataEntries from '../types/MetadataEntries'
 import GetColor from '../lib/GetColor';
+import GeoJSONFeatures from './GeoJSONFeatures'
 
 
 interface MapProps {
@@ -78,25 +79,18 @@ interface MapProps {
 
 let geojsonKey = 0;
 export default React.memo(function Map({ features, metadata, dataBounds, focusedKey, setInspecting }: MapProps) {
-    const renderGeoJSON = () => {
-        return features.map(feature => {
-            const metadataEntry = metadata[focusedKey];
-            let style = {}
-            if (metadataEntry) {
-                style = {
-                    color: GetColor(metadataEntry.meta, feature?.properties?.[focusedKey])
-                }
-            }
-            return <GeoJSON data={feature} key={geojsonKey++} style={style} eventHandlers={{
-                click: () => {
-                    setInspecting(feature)
-                }
-            }} />
-        }
-        );
-    }
 
     const map = useMap();
+
+    useEffect(() => {
+        const metadataEntry = metadata[focusedKey];
+        map.eachLayer((layer: any) => {
+            if (layer?.feature) {
+                //console.log('setting style to ')
+                layer.setStyle({ color: GetColor(metadataEntry.meta, layer.feature?.properties?.[focusedKey]) })
+            }
+        })
+    }, [focusedKey])
 
     useEffect(() => {
         if (dataBounds) {
@@ -110,7 +104,7 @@ export default React.memo(function Map({ features, metadata, dataBounds, focused
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
                 url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
             />
-            {renderGeoJSON()}
+            <GeoJSONFeatures {...{ features, metadata, focusedKey, setInspecting }} />
         </>
     );
 })

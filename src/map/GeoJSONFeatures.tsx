@@ -58,132 +58,56 @@ You may add Your own copyright statement to Your modifications and may provide a
 END OF TERMS AND CONDITIONS
 */
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import logo from './logo.svg';
-import './App.css';
-import Map from './map/Map';
-import MetadataEntries, { MetadataType } from './types/MetadataEntries';
-import ImportMapData from './ui/ImportMapData';
+import { TileLayer, Marker, Popup, GeoJSON, useMap } from 'react-leaflet'
 import L from 'leaflet'
-import bbox from '@turf/bbox';
-import { MapContainer } from 'react-leaflet';
-import Inspector from './inspector/Inspector';
-const MAXIMUM_CATEGORIES = 1000;
+import './Map.css';
+import 'leaflet/dist/leaflet.css';
+import MetadataEntries from '../types/MetadataEntries'
+import GetColor from '../lib/GetColor';
 
-export default function App() {
-    const [features, setFeatures] = useState([] as GeoJSON.Feature[])
-    const [metadata, setMetadata] = useState({} as MetadataEntries)
-    const [dataBounds, setDataBounds] = useState(null as unknown as L.LatLngBounds)
-    const [dataImported, setDataImported] = useState(false as boolean)
-    const [focusedKey, setFocusedKey] = useState(null as unknown as string)
-    const [inspectorOpen, setInspectorOpen] = useState(false as boolean);
-    const [inspecting, setInspecting] = useState(null as unknown as GeoJSON.Feature)
 
-    const renderImporter = () => {
-        if (!dataImported) {
-            return <ImportMapData {...{ setFeatures, setMetadata, setDataImported }} />
-        }
-    }
+interface GeoJSONFeaturesProps {
+    features: GeoJSON.Feature[],
+    metadata: MetadataEntries,
+    focusedKey: string,
+    setInspecting: React.Dispatch<React.SetStateAction<GeoJSON.Feature<GeoJSON.Geometry, GeoJSON.GeoJsonProperties>>>
+}
 
-    const renderInspector = () => {
-        if(inspectorOpen) {
-            return <Inspector {...{inspecting, setInspectorOpen, metadata, focusedKey, setFocusedKey}}/>
-        }
-    }
-
-    const getType = (value: any): MetadataType => {
-        if(typeof value === 'number') {
-            return 'quantitative'
-        }
-        return 'categorical'
-    }
-
-    useEffect(() => {
-        if(inspecting) {
-            setInspectorOpen(true);
-        }
-    }, [inspecting])
-
-    useEffect(() => {
-        if(!inspectorOpen){
-            setInspecting(null as unknown as GeoJSON.Feature)
-        }
-    }, [inspectorOpen])
-
-    useEffect(() => {
-        if (features.length) {
-            const bboxF = bbox({
-                type: "FeatureCollection",
-                features
-            })
-            setDataBounds(L.latLngBounds(L.latLng(bboxF[1], bboxF[0]), L.latLng(bboxF[3], bboxF[2])))
-            const newMetadata: MetadataEntries = {}
-            for (const feature of features) {
-                if (feature.properties) {
-                    for (let [key, value] of Object.entries(feature.properties)) {
-                        if(!value) {
-                            continue;
-                        }
-                        const valueType = getType(value)
-                        if(valueType === 'categorical' && typeof value !== 'string') {
-                            value = JSON.stringify(value)
-                        }
-
-                        if(!newMetadata[key]) {
-                            if(valueType === 'quantitative') {
-                                newMetadata[key] = { 
-                                    meta: [value as number, value as number],
-                                    type: valueType
-                                } 
-                            }
-                            else {
-                                newMetadata[key] = {
-                                    meta: [value as string],
-                                    type: valueType
-                                }
-                            }
-                        }
-                        else {
-                            if(valueType === 'quantitative') {
-                                const currentMinMax = newMetadata[key].meta as unknown as number[];
-                                if(value < currentMinMax[0]) {
-                                    currentMinMax[0] = value;
-                                }
-                                else if(value > currentMinMax[1]) {
-                                    currentMinMax[1] = value;
-                                }
-                            }
-                            else {
-                                const typedMeta = newMetadata[key].meta as string[]
-                                typedMeta.push(value)
-                            }
-                        }
-                    }
+let geojsonKey = 0;
+export default React.memo(function GeoJSONFeatures({ features, metadata, focusedKey, setInspecting }: GeoJSONFeaturesProps) {
+    const renderGeoJSON = () => {
+        return features.map(feature => {
+            const metadataEntry = metadata[focusedKey];
+            let style = {}
+            if (metadataEntry) {
+                style = {
+                    color: GetColor(metadataEntry.meta, feature?.properties?.[focusedKey])
                 }
             }
-            for(const [key, metadataEntry] of Object.entries(newMetadata)) {
-                if(metadataEntry.type === 'categorical') {
-                    metadataEntry.meta = Array.from(new Set<string>(metadataEntry.meta as string[]))
-                    if(metadataEntry.meta.length > MAXIMUM_CATEGORIES){
-                        delete newMetadata[key]
-                    }
+            return <GeoJSON data={feature} key={feature.properties?.unique} style={style} eventHandlers={{
+                click: () => {
+                    setInspecting(feature)
                 }
-            }
-            setMetadata(newMetadata)
-            setFocusedKey(Object.keys(newMetadata)[0])
+            }} />
         }
-    }, [features])
+        );
+    }
 
     return (
-        <div className="App">
-            <div className="Map">
-                <MapContainer center={[40.5, -105.5]} zoom={4}>
-                    <Map {...{features: Object.keys(metadata).length ? features : [], metadata, dataBounds, focusedKey, setInspecting}}/>
-                </MapContainer>
-            </div>
-            {renderImporter()}
-            {renderInspector()}
-        </div>
+        <>
+            <TileLayer
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+                url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
+            />
+            {renderGeoJSON()}
+        </>
     );
-}
+}, (p, op) => { 
+    if(p.features.length !== op.features.length) {
+        return false;
+    }
+    return true;
+})
 
