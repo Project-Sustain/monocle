@@ -67,6 +67,7 @@ import MetadataEntries from '../types/MetadataEntries';
 import GetColor, { qColorGrad } from '../lib/GetColor';
 import FixedLengthArray from '../types/FixedLengthArray';
 import useHover from '../customHooks/useHover';
+import * as d3 from 'd3';
 
 
 
@@ -83,6 +84,7 @@ const moduleElevation = 6;
 export default React.memo(function Inspector({ setInspectorOpen, inspecting, metadata, focusedKey, setFocusedKey }: InspectorProps) {
     const [filterValue, setFilterValue] = useState('')
     const toScrollIntoView = useRef(null as unknown as HTMLElement | null)
+    const svgRef = useRef(null)
 
     useEffect(() => {
         if (toScrollIntoView.current) {
@@ -90,6 +92,63 @@ export default React.memo(function Inspector({ setInspectorOpen, inspecting, met
         }
         toScrollIntoView.current = null;
     }, [])
+
+    useEffect(() => {
+        const width = 350;
+        const height = 85;
+        const marginBottom = 20;
+        const marginLeftRight = 30;
+        const svg = d3.select(svgRef.current);
+        svg.selectAll('*').remove();
+        svg.attr("viewBox", `0 0 ${width} ${height}`);
+
+
+        const linearGradient = svg.append("defs")
+            .append("linearGradient")
+            .attr("id", "linear-gradient");
+
+        const gradientLength = qColorGrad.length;
+
+        for (let i = 0; i < gradientLength; i++) {
+            linearGradient.append("stop")
+                .attr("offset", `${Math.round(i * 100 / gradientLength)}%`)
+                .attr("stop-color", qColorGrad[i]);
+        }
+
+        //add gradient
+        svg.append("rect")
+            .attr("transform", `translate(${marginLeftRight},0)`)
+            .attr("x", 0)
+            .attr("y", 0)
+            .attr("width", width - marginLeftRight * 2)
+            .attr("height", height - marginBottom)
+            .style("fill", "url(#linear-gradient)");
+
+        //add line
+        let value = inspecting?.properties?.[focusedKey] as number;
+        const range = metadata[focusedKey].meta as FixedLengthArray<[number, number]>
+        const xValue = (width - marginLeftRight * 2) * Math.min(Math.max((value - range[0]) / (range[1] - range[0]), 0.0000001), 0.9999999) + marginLeftRight;
+        svg.append('line')
+            .style("stroke", "black")
+            .style("stroke-width", 3)
+            .attr("x1", xValue)
+            .attr("y1", 0)
+            .attr("x2", xValue)
+            .attr("y2", height - marginBottom);
+
+        //console.log({colorFieldName, obj: obj})
+        let scale = d3.scaleLinear()
+
+        //add axis
+        const linearScale = scale
+            .domain(d3.extent(range) as [number,number])
+            .range([0, width - marginLeftRight * 2])
+            .nice()
+
+        const axis = d3.axisBottom(linearScale).ticks(5);
+        svg.append('g').attr("transform", `translate(${marginLeftRight},${height - marginBottom})`).call(axis);
+
+    }, [inspecting]);
 
     const getRenderableValue = (value: any) => {
         if (["string", "number"].includes(typeof value)) {
@@ -170,21 +229,7 @@ export default React.memo(function Inspector({ setInspectorOpen, inspecting, met
             const metaTyped = metadata[focusedKey].meta as FixedLengthArray<[number, number]>;
             return <Grid container>
                 <Grid item xs={12}>
-                    <div style={{ height: '10px', margin: '10px 10px 0px 10px' }}>
-                        <div style={{
-                            position: 'absolute',
-                            transform: `translate(${(inspecting?.properties?.[focusedKey] - metaTyped[0]) / (metaTyped[1] - metaTyped[0]) * 22.3 - 0.3}vw,-10px) scale(1,2.5)`
-                        }}>▼</div>
-                    </div>
-                </Grid>
-                <Grid item xs={12}>
-                    <div style={{
-                        backgroundImage: `linear-gradient(to right, ${qColorGrad.toString()})`,
-                        height: '75px',
-                        margin: '0 10px 10px 10px',
-                        borderRadius: '4px',
-                        border: '2px solid black'
-                    }}></div>
+                    <svg ref={svgRef} />
                 </Grid>
             </Grid>
         }
