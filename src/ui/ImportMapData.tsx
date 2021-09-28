@@ -61,6 +61,7 @@ END OF TERMS AND CONDITIONS
 import React, { useState } from 'react';
 import { Grid, Modal, Paper } from '@material-ui/core';
 import './ImportMapData.css';
+import SortFeatureCollection from '../lib/SortFeatureCollections';
 
 interface ImportMapDataProps {
     setFeatures: React.Dispatch<React.SetStateAction<GeoJSON.Feature<GeoJSON.Geometry, GeoJSON.GeoJsonProperties>[]>>,
@@ -91,7 +92,7 @@ export default function ImportMapData({ setFeatures, setDataImported }: ImportMa
                 }
             }
             setValid(Validity.valid)
-            setFeatures(json)
+            setFeatures(SortFeatureCollection(json))
             setDataImported(true)
             return;
         }
