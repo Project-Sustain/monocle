@@ -177,7 +177,7 @@ export default function App() {
     return (
         <div className="App">
             <div className="Map">
-                <MapContainer center={[40.5, -105.5]} zoom={4}>
+                <MapContainer center={[40.5, -105.5]} zoom={4} preferCanvas={true} renderer={L.canvas()}>
                     <Map {...{features: Object.keys(metadata).length ? features : [], metadata, dataBounds, focusedKey, setInspecting}}/>
                 </MapContainer>
             </div>
