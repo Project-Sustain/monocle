@@ -60,7 +60,8 @@ END OF TERMS AND CONDITIONS
 
 import React, { useEffect, useRef } from 'react';
 import logo from './logo.svg';
-import { TileLayer, Marker, Popup, GeoJSON, useMap, GeoJSONProps } from 'react-leaflet'
+import { TileLayer, Marker, Popup, GeoJSON, useMap, GeoJSONProps, MarkerProps } from 'react-leaflet'
+import { EventedProps, createLayerComponent } from '@react-leaflet/core'
 import L from 'leaflet'
 import './Map.css';
 import 'leaflet/dist/leaflet.css';
@@ -70,6 +71,7 @@ import MarkerClusterGroup from 'react-leaflet-markercluster';
 import MarkerIcon from '../assets/icon.png'
 import 'leaflet.markercluster/dist/MarkerCluster.css'
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css'
+import { Marker as LeafletMarker } from 'leaflet'
 
 
 interface GeoJSONFeaturesProps {
@@ -78,6 +80,19 @@ interface GeoJSONFeaturesProps {
     focusedKey: string,
     setInspecting: React.Dispatch<React.SetStateAction<GeoJSON.Feature<GeoJSON.Geometry, GeoJSON.GeoJsonProperties>>>
 }
+
+export interface CustomMarkerProps extends MarkerProps, EventedProps {
+    [key: string]: any,
+    feature: any
+}
+
+export const CustomMarker = createLayerComponent<LeafletMarker, CustomMarkerProps>(
+    function createMarker({ feature, position, ...options }, ctx) {
+        const instance = new LeafletMarker(position, options);
+        instance.feature = feature;
+        return { instance, context: { ...ctx, overlayContainer: instance } };
+    }
+);
 
 export default React.memo(function GeoJSONFeatures({ features, metadata, focusedKey, setInspecting }: GeoJSONFeaturesProps) {
     const renderGeoJSON = () => {
@@ -120,11 +135,11 @@ export default React.memo(function GeoJSONFeatures({ features, metadata, focused
                     html: iconHTML
                 });
 
-                return <Marker position={[geom.coordinates[1], geom.coordinates[0]]} key={feature.properties?.unique} eventHandlers={{
+                return <CustomMarker position={[geom.coordinates[1], geom.coordinates[0]]} key={feature.properties?.unique} eventHandlers={{
                     click: () => {
                         setInspecting(feature)
                     }
-                }} icon={iconCustom}/>
+                }} icon={iconCustom} feature={feature} />
             })}
         </MarkerClusterGroup>
 
