@@ -174,10 +174,10 @@ export default React.memo(function Inspector({ setInspectorOpen, inspecting, met
                         toScrollIntoView.current = e.target as HTMLElement;
                     }
                 }} className={metadata[key] ? "inspectorTableRow" : ''} style={{ backgroundColor: focusedKey === key ? '#adadad' : '#ffffff' }}>
-                    <TableCell>
+                    <TableCell style={{maxWidth: '11vw'}}>
                         {key}
                     </TableCell>
-                    <TableCell>
+                    <TableCell style={{maxWidth: '11vw'}}>
                         {getRenderableValue(value)}
                     </TableCell>
                 </TableRow>);
@@ -246,10 +246,10 @@ export default React.memo(function Inspector({ setInspectorOpen, inspecting, met
                     <TableBody>
                         {metaTyped.sort().map(key => {
                             return <TableRow style={{ backgroundColor: inspecting?.properties?.[focusedKey] === key ? '#adadad' : '#ffffff' }} key={key}>
-                                <TableCell>
+                                <TableCell style={{maxWidth: '11vw'}}>
                                     {key}
                                 </TableCell>
-                                <TableCell>
+                                <TableCell style={{maxWidth: '11vw'}}>
                                     {colorDiv(GetColor(metaTyped, key))}
                                 </TableCell>
                             </TableRow>
@@ -283,7 +283,7 @@ export default React.memo(function Inspector({ setInspectorOpen, inspecting, met
                                         <TableCell>
                                             Value
                                         </TableCell>
-                                        <TableCell>
+                                        <TableCell style={{maxWidth: '11vw'}}>
                                             {getRenderableValue(inspecting?.properties?.[focusedKey])}
                                         </TableCell>
                                     </TableRow>
