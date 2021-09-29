@@ -150,7 +150,7 @@ export default React.memo(function Inspector({ setInspectorOpen, inspecting, met
 
         const axis = d3.axisBottom(linearScale).ticks(5);
         svg.append('g').attr("transform", `translate(${marginLeftRight},${height - marginBottom})`).call(axis);
-    }, [inspecting]);
+    }, [inspecting, focusedKey]);
 
     const getRenderableValue = (value: any) => {
         if (["string", "number"].includes(typeof value)) {
