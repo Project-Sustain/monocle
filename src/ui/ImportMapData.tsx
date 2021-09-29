@@ -59,7 +59,7 @@ END OF TERMS AND CONDITIONS
 */
 
 import React, { useState } from 'react';
-import { Grid, Modal, Paper } from '@material-ui/core';
+import { Grid, Modal, Paper, Typography } from '@material-ui/core';
 import './ImportMapData.css';
 import SortFeatureCollection from '../lib/SortFeatureCollections';
 
@@ -76,45 +76,71 @@ enum Validity {
 
 export default function ImportMapData({ setFeatures, setDataImported }: ImportMapDataProps) {
     const [valid, setValid] = useState(Validity.none as Validity)
-    const acceptableTypes = [".json",".geojson",".JSON",".GEOJSON",".GeoJSON"];
+    const acceptableTypes = [".json", ".geojson", ".JSON", ".GEOJSON", ".GeoJSON"];
 
     const importGeoJSON = (json: any) => {
         //validate the json
-        if(typeof json !== 'object') {
+        if (typeof json !== 'object') {
             setValid(Validity.invalid)
             return;
         }
-        if(Array.isArray(json)) {
-            for(const entry of json) {
-                if(!entry.geometry) {
-                    return;
+        if (Array.isArray(json)) {
+            for (const entry of json) {
+                if (!entry.geometry) {
                     setValid(Validity.invalid)
+                    return;
                 }
             }
-            setValid(Validity.valid)
-            let unique = 0;
-            json.forEach(e => e.properties.unique = unique++)
-            setFeatures(SortFeatureCollection(json))
-            setDataImported(true)
+            importValidGeoJSONFeatureArray(json as GeoJSON.Feature[]);
             return;
         }
-    } 
+        setValid(Validity.invalid)
+    }
+
+    const importValidGeoJSONFeatureArray = (featureArray: GeoJSON.Feature[]) => {
+        setValid(Validity.valid)
+        setTimeout(() => {
+            let unique = 0;
+            featureArray.forEach(e => {
+                if (!e.properties) {
+                    e.properties = {}
+                }
+                e.properties.unique = unique++
+            })
+            setFeatures(SortFeatureCollection(featureArray))
+            setDataImported(true)
+        }, 100)
+    }
+
+    const status = () => {
+        switch (valid) {
+            case Validity.none:
+                return ""
+            case Validity.invalid:
+                return "Invalid GeoJSON File!"
+            case Validity.valid:
+                return "Loading your file, this may take awhile."
+        }
+    }
 
     return (
         <Paper className="importerRoot">
             <Grid container className="importerContainer">
                 <Grid item xs={12}>
+                    <Typography variant="h5">Select a valid <a href={'https://geojson.org/'} target="_blank">GeoJSON</a> file.</Typography>
+                    <Typography gutterBottom>File should either be in GeoJSON FeatureCollection format or be an Array of GeoJSON Features</Typography>
+                    <br />
                     <input
                         onInput={(e) => {
                             const target = e.target as HTMLInputElement;
                             const file = target.files?.[0]
-                            if(!file){
+                            if (!file) {
                                 return;
                             }
                             const reader = new FileReader();
                             reader.readAsText(file, "UTF-8");
                             reader.onload = function (fsE) {
-                                if(fsE && fsE.target?.result && typeof fsE?.target?.result === 'string'){
+                                if (fsE && fsE.target?.result && typeof fsE?.target?.result === 'string') {
                                     const fileContents = fsE.target.result;
                                     try {
                                         const geojson = JSON.parse(fileContents);
@@ -139,7 +165,8 @@ export default function ImportMapData({ setFeatures, setDataImported }: ImportMa
                     />
                 </Grid>
                 <Grid item xs={12}>
-
+                    <br />
+                    <Typography>{status()}</Typography>
                 </Grid>
             </Grid>
         </Paper>
