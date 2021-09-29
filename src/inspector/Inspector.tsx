@@ -173,7 +173,7 @@ export default React.memo(function Inspector({ setInspectorOpen, inspecting, met
                         setFocusedKey(key);
                         toScrollIntoView.current = e.target as HTMLElement;
                     }
-                }} className="inspectorTableRow" style={{ backgroundColor: focusedKey === key ? '#adadad' : '#ffffff' }}>
+                }} className={metadata[key] ? "inspectorTableRow" : ''} style={{ backgroundColor: focusedKey === key ? '#adadad' : '#ffffff' }}>
                     <TableCell>
                         {key}
                     </TableCell>

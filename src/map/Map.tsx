@@ -87,7 +87,16 @@ export default React.memo(function Map({ features, metadata, dataBounds, focused
         map.eachLayer((layer: any) => {
             if (layer?.feature) {
                 //console.log('setting style to ')
-                layer.setStyle({ color: GetColor(metadataEntry.meta, layer.feature?.properties?.[focusedKey]) })
+                try { 
+                    layer.setStyle({ color: GetColor(metadataEntry.meta, layer.feature?.properties?.[focusedKey]) })
+                }
+                catch {
+                    console.log(layer)
+                }
+            }
+            else if(layer?.options?.icon?.options?.html) {
+                console.log(GetColor(metadataEntry.meta, layer.feature?.properties?.[focusedKey]))
+                layer.options.icon.options.html.style.backgroundColor = GetColor(metadataEntry.meta, layer.feature?.properties?.[focusedKey]);
             }
         })
     }, [focusedKey])

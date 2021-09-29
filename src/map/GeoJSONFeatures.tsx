@@ -60,12 +60,16 @@ END OF TERMS AND CONDITIONS
 
 import React, { useEffect, useRef } from 'react';
 import logo from './logo.svg';
-import { TileLayer, Marker, Popup, GeoJSON, useMap } from 'react-leaflet'
+import { TileLayer, Marker, Popup, GeoJSON, useMap, GeoJSONProps } from 'react-leaflet'
 import L from 'leaflet'
 import './Map.css';
 import 'leaflet/dist/leaflet.css';
 import MetadataEntries from '../types/MetadataEntries'
 import GetColor from '../lib/GetColor';
+import MarkerClusterGroup from 'react-leaflet-markercluster';
+import MarkerIcon from '../assets/icon.png'
+import 'leaflet.markercluster/dist/MarkerCluster.css'
+import 'leaflet.markercluster/dist/MarkerCluster.Default.css'
 
 
 interface GeoJSONFeaturesProps {
@@ -75,11 +79,11 @@ interface GeoJSONFeaturesProps {
     setInspecting: React.Dispatch<React.SetStateAction<GeoJSON.Feature<GeoJSON.Geometry, GeoJSON.GeoJsonProperties>>>
 }
 
-let geojsonKey = 0;
 export default React.memo(function GeoJSONFeatures({ features, metadata, focusedKey, setInspecting }: GeoJSONFeaturesProps) {
     const renderGeoJSON = () => {
-        return features.map(feature => {
-            const metadataEntry = metadata[focusedKey];
+        const points: GeoJSON.Feature[] = features.filter(f => f.geometry.type === 'Point');
+        const metadataEntry = metadata[focusedKey];
+        const layers = features.map(feature => {
             let style = {}
             if (metadataEntry) {
                 style = {
@@ -90,22 +94,57 @@ export default React.memo(function GeoJSONFeatures({ features, metadata, focused
                 click: () => {
                     setInspecting(feature)
                 }
+            }} pointToLayer={(p, latlng) => {
+                return null as unknown as L.Layer
             }} />
-        }
-        );
+        });
+
+        const markers = <MarkerClusterGroup>
+            {points.map(feature => {
+                const geom = feature.geometry as GeoJSON.Point
+                const iconHTML = document.createElement('img')
+                const iconMargin = 6;
+                const iconSize = 40;
+                const iconOffSet = (iconSize - (iconMargin * 2)) / 2
+                iconHTML.setAttribute('src', `${MarkerIcon}`);
+                iconHTML.setAttribute('width', `${iconSize}`)
+                iconHTML.setAttribute('height', `${iconSize}`)
+                iconHTML.style.padding = `${iconMargin}px`
+                iconHTML.style.backgroundColor = GetColor(metadataEntry.meta, feature?.properties?.[focusedKey]) ?? 'white';
+                iconHTML.style.transform = `translate(-${iconOffSet}px, -${iconOffSet}px)`
+                iconHTML.style.borderRadius = `${iconSize / 2}px`
+
+                const iconCustom = new L.DivIcon({
+                    iconSize: new L.Point(35, 35),
+                    className: 'none',
+                    html: iconHTML
+                });
+
+                return <Marker position={[geom.coordinates[1], geom.coordinates[0]]} key={feature.properties?.unique} eventHandlers={{
+                    click: () => {
+                        setInspecting(feature)
+                    }
+                }} icon={iconCustom}/>
+            })}
+        </MarkerClusterGroup>
+
+        return { layers, markers }
     }
 
+    const { layers, markers } = renderGeoJSON()
+    console.log({ markers })
     return (
         <>
             <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
                 url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
             />
-            {renderGeoJSON()}
+            {layers}
+            {markers}
         </>
     );
-}, (p, op) => { 
-    if(p.features.length !== op.features.length) {
+}, (p, op) => {
+    if (p.features.length !== op.features.length) {
         return false;
     }
     return true;

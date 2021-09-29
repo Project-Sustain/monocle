@@ -1,3 +1,12 @@
 .leaflet-container {
     height: 100vh;
 }
+
+.mIcon {
+    background-image: url(../assets/icon.png);
+    background-size: 35px 35px;
+    height: 35px;
+    width: 35px;
+    border-radius: 17.5px;
+    background-color: black;
+}   
