@@ -119,7 +119,7 @@ export default React.memo(function GeoJSONFeatures({ features, metadata, focused
                 const geom = feature.geometry as GeoJSON.Point
                 const iconHTML = document.createElement('img')
                 const iconMargin = 6;
-                const iconSize = 40;
+                const iconSize = 23;
                 const iconOffSet = (iconSize - (iconMargin * 2)) / 2
                 iconHTML.setAttribute('src', `${MarkerIcon}`);
                 iconHTML.setAttribute('width', `${iconSize}`)
@@ -147,7 +147,6 @@ export default React.memo(function GeoJSONFeatures({ features, metadata, focused
     }
 
     const { layers, markers } = renderGeoJSON()
-    console.log({ markers })
     return (
         <>
             <TileLayer
