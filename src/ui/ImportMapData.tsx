@@ -84,14 +84,24 @@ export default function ImportMapData({ setFeatures, setDataImported }: ImportMa
             setValid(Validity.invalid)
             return;
         }
-        if (Array.isArray(json)) {
-            for (const entry of json) {
+
+        const importProbableFeatureArray = (arr: any[]) => {
+            for (const entry of arr) {
                 if (!entry.geometry) {
                     setValid(Validity.invalid)
                     return;
                 }
             }
-            importValidGeoJSONFeatureArray(json as GeoJSON.Feature[]);
+            importValidGeoJSONFeatureArray(arr as GeoJSON.Feature[]);
+            return;
+        }
+
+        if (Array.isArray(json)) {
+            importProbableFeatureArray(json)
+            return;
+        }
+        else if(json.features){
+            importProbableFeatureArray(json.features)
             return;
         }
         setValid(Validity.invalid)

@@ -64,7 +64,7 @@ import FixedLengthArray from "../types/FixedLengthArray";
 
 const nshades = 100;
 export const qColorGrad = createColormap({
-    colormap: 'jet',
+    colormap: 'bluered',
     nshades,
     format: 'hex',
     alpha: 1
