@@ -134,7 +134,7 @@ export default function ImportMapData({ setFeatures, setDataImported }: ImportMa
     }
 
     return (
-        <Paper className="importerRoot">
+        <Paper elevation={3} className="importerRoot">
             <Grid container className="importerContainer">
                 <Grid item xs={12}>
                     <Typography variant="h5">Select a valid <a href={'https://geojson.org/'} target="_blank">GeoJSON</a> file.</Typography>
