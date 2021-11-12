@@ -62,6 +62,8 @@ import React, { useState } from 'react';
 import {Button, Grid, makeStyles, Paper, Typography} from '@material-ui/core';
 import SortFeatureCollection from '../lib/SortFeatureCollections';
 import {styled} from "@mui/material";
+import FileUploadIcon from '@mui/icons-material/FileUpload';
+import FancyButton from "./FancyButton";
 
 interface ImportMapDataProps {
     setFeatures: React.Dispatch<React.SetStateAction<GeoJSON.Feature<GeoJSON.Geometry, GeoJSON.GeoJsonProperties>[]>>,
@@ -77,13 +79,13 @@ enum Validity {
 // @ts-ignore
 const useStyles = makeStyles(() => ({
     root: {
-        width: "50vw",
+        width: "40vw",
         position: "absolute",
         zIndex: "10000",
         top: "50%",
         left: "50%",
         transform: "translate(-50%, -50%)",
-        padding: "50px",
+        padding: "20px",
     },
 }));
 
@@ -155,8 +157,8 @@ export default function ImportMapData({ setFeatures, setDataImported }: ImportMa
         <Paper elevation={3} className={classes.root}>
             <Grid container>
                 <Grid item xs={12}>
-                    <Typography variant="h5">Select a valid <a href={'https://geojson.org/'} target="_blank">GeoJSON</a> file.</Typography>
-                    <Typography gutterBottom>File should either be in GeoJSON FeatureCollection format or be an Array of GeoJSON Features</Typography>
+                    <Typography>Select a valid <a href={'https://geojson.org/'} target="_blank">GeoJSON</a> file.</Typography>
+                    <Typography>File should either be in GeoJSON FeatureCollection format or be an Array of GeoJSON Features</Typography>
                     <br />
                     <label htmlFor="geojsonInput">
                         <Input
@@ -173,18 +175,17 @@ export default function ImportMapData({ setFeatures, setDataImported }: ImportMa
                                         const fileContents = fsE.target.result;
                                         try {
                                             const geojson = JSON.parse(fileContents);
-                                            importGeoJSON(geojson)
+                                            importGeoJSON(geojson);
                                         }
                                         catch {
-                                            setValid(Validity.invalid)
+                                            setValid(Validity.invalid);
                                         }
                                         return;
                                     }
-                                    setValid(Validity.invalid)
+                                    setValid(Validity.invalid);
                                 }
                                 reader.onerror = function (evt) {
-                                    setValid(Validity.invalid)
-                                    console.error("shit")
+                                    setValid(Validity.invalid);
                                 }
                             }}
                             id="geojsonInput"
@@ -192,9 +193,10 @@ export default function ImportMapData({ setFeatures, setDataImported }: ImportMa
                             type="file"
                             accept={acceptableTypes.join(',')}
                         />
-                        <Button variant="outlined" component="span">
-                            Choose File
-                        </Button>
+                        <FancyButton />
+                        {/*<Button variant="outlined" component="span" endIcon={<FileUploadIcon />}>*/}
+                        {/*    Choose File*/}
+                        {/*</Button>*/}
                     </label>
                 </Grid>
                 <Grid item xs={12}>
