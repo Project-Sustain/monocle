@@ -26,23 +26,24 @@ const CustomButtonRoot = styled(ButtonRoot)(
     ({ theme }: { theme: Theme }) => `
   overflow: visible;
   cursor: pointer;
+  border-radius: 25% 10%;
   --main-color: ${
         theme.palette.mode === 'light' ? '#7b21db' : '#661eb3'
     };
   --hover-color: ${
         theme.palette.mode === 'light'
-            ? 'rgba(25,118,210,0.04)'
-            : 'rgba(144,202,249,0.08)'
+            ? 'rgba(98, 2, 201,0.04)'
+            : '#8522f0'
     };
   --active-color: ${
         theme.palette.mode === 'light'
-            ? 'rgba(25,118,210,0.12)'
-            : 'rgba(144,202,249,0.24)'
+            ? 'rgba(98, 2, 201,0.12)'
+            : '#8522f0'
     };
 
   & polygon {
     fill: transparent;
-    transition: all 800ms ease;
+    transition: all 1400ms ease;
     pointer-events: none;
   }
   

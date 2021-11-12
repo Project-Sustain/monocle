@@ -59,10 +59,9 @@ END OF TERMS AND CONDITIONS
 */
 
 import React, { useState } from 'react';
-import {Button, Grid, makeStyles, Paper, Typography} from '@material-ui/core';
+import {Grid, makeStyles, Paper, Typography} from '@material-ui/core';
 import SortFeatureCollection from '../lib/SortFeatureCollections';
 import {styled} from "@mui/material";
-import FileUploadIcon from '@mui/icons-material/FileUpload';
 import FancyButton from "./FancyButton";
 
 interface ImportMapDataProps {
@@ -194,9 +193,6 @@ export default function ImportMapData({ setFeatures, setDataImported }: ImportMa
                             accept={acceptableTypes.join(',')}
                         />
                         <FancyButton />
-                        {/*<Button variant="outlined" component="span" endIcon={<FileUploadIcon />}>*/}
-                        {/*    Choose File*/}
-                        {/*</Button>*/}
                     </label>
                 </Grid>
                 <Grid item xs={12}>
