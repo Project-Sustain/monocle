@@ -4,6 +4,7 @@ import ButtonUnstyled, {
     buttonUnstyledClasses,
 } from '@mui/core/ButtonUnstyled';
 import { styled, Theme } from '@mui/system';
+import { orangePrimary } from "../App";
 
 const ButtonRoot = React.forwardRef(function ButtonRoot(
     props: React.PropsWithChildren<{}>,
@@ -28,17 +29,17 @@ const CustomButtonRoot = styled(ButtonRoot)(
   cursor: pointer;
   border-radius: 25% 10%;
   --main-color: ${
-        theme.palette.mode === 'light' ? '#7b21db' : '#661eb3'
+        theme.palette.mode === 'light' ? orangePrimary : orangePrimary
     };
   --hover-color: ${
         theme.palette.mode === 'light'
-            ? 'rgba(98, 2, 201,0.04)'
-            : '#8522f0'
+            ? 'rgba(255, 119, 0,0.04)'
+            : orangePrimary
     };
   --active-color: ${
         theme.palette.mode === 'light'
-            ? 'rgba(98, 2, 201,0.12)'
-            : '#8522f0'
+            ? 'rgba(255, 119, 0,0.12)'
+            : orangePrimary
     };
 
   & polygon {
