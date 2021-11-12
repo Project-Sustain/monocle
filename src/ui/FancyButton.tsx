@@ -43,7 +43,7 @@ const CustomButtonRoot = styled(ButtonRoot)(
 
   & polygon {
     fill: transparent;
-    transition: all 1400ms ease;
+    transition: all 1500ms ease;
     pointer-events: none;
   }
   
