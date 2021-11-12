@@ -79,14 +79,11 @@ const useStyles = makeStyles(() => ({
     root: {
         width: "50vw",
         position: "absolute",
-        height: "50vh",
         zIndex: "10000",
         top: "50%",
         left: "50%",
         transform: "translate(-50%, -50%)",
         padding: "50px",
-    },
-    container: {
     },
 }));
 
@@ -156,7 +153,7 @@ export default function ImportMapData({ setFeatures, setDataImported }: ImportMa
 
     return (
         <Paper elevation={3} className={classes.root}>
-            <Grid container className="importerContainer">
+            <Grid container>
                 <Grid item xs={12}>
                     <Typography variant="h5">Select a valid <a href={'https://geojson.org/'} target="_blank">GeoJSON</a> file.</Typography>
                     <Typography gutterBottom>File should either be in GeoJSON FeatureCollection format or be an Array of GeoJSON Features</Typography>
@@ -195,8 +192,8 @@ export default function ImportMapData({ setFeatures, setDataImported }: ImportMa
                             type="file"
                             accept={acceptableTypes.join(',')}
                         />
-                        <Button variant="contained" component="span">
-                            Upload
+                        <Button variant="outlined" component="span">
+                            Choose File
                         </Button>
                     </label>
                 </Grid>
