@@ -59,7 +59,6 @@ END OF TERMS AND CONDITIONS
 */
 
 import React, { useState } from 'react';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
 import {makeStyles} from '@material-ui/core';
 import {
     Avatar,
@@ -77,7 +76,6 @@ import {styled} from "@mui/material";
 import FancyButton from "./FancyButton";
 import FolderIcon from '@mui/icons-material/Folder';
 import InfoIcon from '@mui/icons-material/Info';
-import purple from '@mui/material/colors/purple';
 
 interface ImportMapDataProps {
     setFeatures: React.Dispatch<React.SetStateAction<GeoJSON.Feature<GeoJSON.Geometry, GeoJSON.GeoJsonProperties>[]>>,
@@ -102,14 +100,6 @@ const useStyles = makeStyles(() => ({
         padding: "20px",
     },
 }));
-
-const theme = createTheme({
-    palette: {
-        primary: {
-            main: '#7b21db',
-        },
-    },
-});
 
 export default function ImportMapData({ setFeatures, setDataImported }: ImportMapDataProps) {
     const classes = useStyles();
@@ -178,74 +168,72 @@ export default function ImportMapData({ setFeatures, setDataImported }: ImportMa
     const specificText = `File should either be in GeoJSON FeatureCollection format or be an Array of GeoJSON Features`;
 
     return (
-        <ThemeProvider theme={theme}>
-            <Paper elevation={5} className={classes.root}>
-                <Grid container>
-                    <Grid item xs={12}>
-                        <List>
-                            <ListItem>
-                                <ListItemAvatar>
-                                    <Avatar>
-                                        <FolderIcon />
-                                    </Avatar>
-                                </ListItemAvatar>
-                                <ListItemText primary="Select a valid GeoJSON file" secondary={
-                                    <Link href={'https://geojson.org/'} color="primary" underline="hover" target="_blank">
-                                        GeoJSON.org
-                                    </Link>
-                                } />
-                            </ListItem>
-                            <ListItem>
-                                <ListItemAvatar>
-                                    <Avatar>
-                                        <InfoIcon />
-                                    </Avatar>
-                                </ListItemAvatar>
-                                <ListItemText primary={specificText} />
-                            </ListItem>
-                        </List>
-                        <label htmlFor="geojsonInput">
-                            <Input
-                                onInput={(e) => {
-                                    const target = e.target as HTMLInputElement;
-                                    const file = target.files?.[0]
-                                    if (!file) {
+        <Paper elevation={5} className={classes.root}>
+            <Grid container>
+                <Grid item xs={12}>
+                    <List>
+                        <ListItem>
+                            <ListItemAvatar>
+                                <Avatar>
+                                    <FolderIcon />
+                                </Avatar>
+                            </ListItemAvatar>
+                            <ListItemText primary="Select a valid GeoJSON file" secondary={
+                                <Link href={'https://geojson.org/'} color="primary" underline="hover" target="_blank">
+                                    GeoJSON.org
+                                </Link>
+                            } />
+                        </ListItem>
+                        <ListItem>
+                            <ListItemAvatar>
+                                <Avatar>
+                                    <InfoIcon />
+                                </Avatar>
+                            </ListItemAvatar>
+                            <ListItemText primary={specificText} />
+                        </ListItem>
+                    </List>
+                    <label htmlFor="geojsonInput">
+                        <Input
+                            onInput={(e) => {
+                                const target = e.target as HTMLInputElement;
+                                const file = target.files?.[0]
+                                if (!file) {
+                                    return;
+                                }
+                                const reader = new FileReader();
+                                reader.readAsText(file, "UTF-8");
+                                reader.onload = function (fsE) {
+                                    if (fsE && fsE.target?.result && typeof fsE?.target?.result === 'string') {
+                                        const fileContents = fsE.target.result;
+                                        try {
+                                            const geojson = JSON.parse(fileContents);
+                                            importGeoJSON(geojson);
+                                        }
+                                        catch {
+                                            setValid(Validity.invalid);
+                                        }
                                         return;
                                     }
-                                    const reader = new FileReader();
-                                    reader.readAsText(file, "UTF-8");
-                                    reader.onload = function (fsE) {
-                                        if (fsE && fsE.target?.result && typeof fsE?.target?.result === 'string') {
-                                            const fileContents = fsE.target.result;
-                                            try {
-                                                const geojson = JSON.parse(fileContents);
-                                                importGeoJSON(geojson);
-                                            }
-                                            catch {
-                                                setValid(Validity.invalid);
-                                            }
-                                            return;
-                                        }
-                                        setValid(Validity.invalid);
-                                    }
-                                    reader.onerror = function (evt) {
-                                        setValid(Validity.invalid);
-                                    }
-                                }}
-                                id="geojsonInput"
-                                name="Select GeoJSON"
-                                type="file"
-                                accept={acceptableTypes.join(',')}
-                            />
-                            <FancyButton />
-                        </label>
-                    </Grid>
-                    <Grid item xs={12}>
-                        <br />
-                        <Typography>{status()}</Typography>
-                    </Grid>
+                                    setValid(Validity.invalid);
+                                }
+                                reader.onerror = function (evt) {
+                                    setValid(Validity.invalid);
+                                }
+                            }}
+                            id="geojsonInput"
+                            name="Select GeoJSON"
+                            type="file"
+                            accept={acceptableTypes.join(',')}
+                        />
+                        <FancyButton />
+                    </label>
                 </Grid>
-            </Paper>
-        </ThemeProvider>
+                <Grid item xs={12}>
+                    <br />
+                    <Typography>{status()}</Typography>
+                </Grid>
+            </Grid>
+        </Paper>
     );
 }

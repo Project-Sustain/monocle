@@ -59,7 +59,6 @@ END OF TERMS AND CONDITIONS
 */
 
 import React, { useState, useEffect } from 'react';
-import logo from './logo.svg';
 import './App.css';
 import Map from './map/Map';
 import MetadataEntries, { MetadataType } from './types/MetadataEntries';
@@ -68,7 +67,16 @@ import L from 'leaflet'
 import bbox from '@turf/bbox';
 import { MapContainer } from 'react-leaflet';
 import Inspector from './inspector/Inspector';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 const MAXIMUM_CATEGORIES = 1000;
+
+const theme = createTheme({
+    palette: {
+        primary: {
+            main: '#7b21db',
+        },
+    },
+});
 
 export default function App() {
     const [features, setFeatures] = useState([] as GeoJSON.Feature[])
@@ -175,15 +183,17 @@ export default function App() {
     }, [features])
 
     return (
-        <div className="App">
-            <div className="Map">
-                <MapContainer center={[40.5, -105.5]} zoom={4} preferCanvas={true} renderer={L.canvas()} worldCopyJump={true}>
-                    <Map {...{features: Object.keys(metadata).length ? features : [], metadata, dataBounds, focusedKey, setInspecting}}/>
-                </MapContainer>
+        <ThemeProvider theme={theme}>
+            <div className="App">
+                <div className="Map">
+                    <MapContainer center={[40.5, -105.5]} zoom={4} preferCanvas={true} renderer={L.canvas()} worldCopyJump={true}>
+                        <Map {...{features: Object.keys(metadata).length ? features : [], metadata, dataBounds, focusedKey, setInspecting}}/>
+                    </MapContainer>
+                </div>
+                {renderImporter()}
+                {renderInspector()}
             </div>
-            {renderImporter()}
-            {renderInspector()}
-        </div>
+        </ThemeProvider>
     );
 }
 
