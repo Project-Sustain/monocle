@@ -70,7 +70,7 @@ import Inspector from './inspector/Inspector';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 const MAXIMUM_CATEGORIES = 1000;
 
-export const orangePrimary = '#F57300';
+export const orangePrimary = '#ff5722';
 
 const theme = createTheme({
     palette: {
