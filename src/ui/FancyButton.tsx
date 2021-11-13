@@ -27,7 +27,6 @@ const CustomButtonRoot = styled(ButtonRoot)(
     ({ theme }: { theme: Theme }) => `
   overflow: visible;
   cursor: pointer;
-  border-radius: 25% 10%;
   --main-color: ${
         theme.palette.mode === 'light' ? orangePrimary : orangePrimary
     };
@@ -50,14 +49,14 @@ const CustomButtonRoot = styled(ButtonRoot)(
   
   & .bg {
     stroke: var(--main-color);
-    stroke-width: 0.5;
+    stroke-width: 1;
     filter: drop-shadow(0 4px 20px rgba(0, 0, 0, 0.1));
     fill: transparent;
   }
 
   & .borderEffect {
     stroke: var(--main-color);
-    stroke-width: 2;
+    stroke-width: 2.5;
     stroke-dasharray: 150 600;
     stroke-dashoffset: 150;
     fill: transparent;
@@ -91,8 +90,8 @@ const CustomButtonRoot = styled(ButtonRoot)(
 
     & .content {
       font-family: Helvetica, Inter, Arial, sans-serif;
-      font-size: 14px;
-      font-weight: 200;
+      font-size: 15px;
+      font-weight: 350;
       height: 100%;
       display: flex;
       align-items: center;
@@ -115,5 +114,5 @@ const SvgButton = React.forwardRef(function SvgButton(
 });
 
 export default function FancyButton() {
-    return <SvgButton>Choose File</SvgButton>;
+    return <SvgButton>Upload File</SvgButton>;
 }
