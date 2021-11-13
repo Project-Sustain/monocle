@@ -32,12 +32,12 @@ const CustomButtonRoot = styled(ButtonRoot)(
     };
   --hover-color: ${
         theme.palette.mode === 'light'
-            ? 'rgba(255, 119, 0,0.04)'
+            ? 'rgba(255, 86, 34,0.04)'
             : orangePrimary
     };
   --active-color: ${
         theme.palette.mode === 'light'
-            ? 'rgba(255, 119, 0,0.12)'
+            ? 'rgba(255, 86, 34,0.12)'
             : orangePrimary
     };
 
