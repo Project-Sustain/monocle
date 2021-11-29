@@ -85,10 +85,10 @@ const theme = createTheme({
 // @ts-ignore
 const useStyles = makeStyles(() => ({
     modalButton: {
-        position: "absolute",
+        position: "fixed",
         zIndex: "10000",
-        top: "15px",
-        left: "5px",
+        top: 15,
+        right: 15,
     }
 }));
 
@@ -191,7 +191,7 @@ export default function App() {
     }
 
     function renderModalButton() {
-        return dataImported ? <Button className={classes.modalButton} variant="contained" onClick={() => setDataImported(false)}>Upload New Data</Button> : null;
+        return dataImported ? <Button variant="contained" onClick={() => setDataImported(false)}>Upload New Data</Button> : null;
     }
 
     const getType = (value: any): MetadataType => {
@@ -204,10 +204,12 @@ export default function App() {
     return (
         <ThemeProvider theme={theme}>
             <div className="App">
+                <div className={classes.modalButton}>
+                    {renderModalButton()}
+                </div>
                 <div className="Map">
                     <MapContainer center={[40.5, -105.5]} zoom={4} preferCanvas={true} renderer={L.canvas()} worldCopyJump={true}>
                         <Map {...{features: Object.keys(metadata).length ? features : [], metadata, dataBounds, focusedKey, setInspecting}}/>
-                        {renderModalButton()}
                     </MapContainer>
                 </div>
                 {renderImporter()}
