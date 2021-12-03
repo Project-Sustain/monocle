@@ -1,4 +1,4 @@
-# Getting Started with Create React App
+# Monacle
 
 Monocle is a simple, fast, GeoJSON visualization tool.
 
