@@ -1,4 +1,4 @@
-# Monacle
+## Monacle
 
 Monocle is a simple, fast, GeoJSON visualization tool.
 
