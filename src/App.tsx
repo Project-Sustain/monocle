@@ -68,6 +68,8 @@ import bbox from '@turf/bbox';
 import { MapContainer } from 'react-leaflet';
 import Inspector from './inspector/Inspector';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import {Button} from "@mui/material";
+import {makeStyles} from "@material-ui/core";
 const MAXIMUM_CATEGORIES = 1000;
 
 export const orangePrimary = '#ff5722';
@@ -80,45 +82,37 @@ const theme = createTheme({
     },
 });
 
+// @ts-ignore
+const useStyles = makeStyles(() => ({
+    modalButton: {
+        position: "fixed",
+        zIndex: "10000",
+        top: 15,
+        right: 15,
+    }
+}));
+
 export default function App() {
-    const [features, setFeatures] = useState([] as GeoJSON.Feature[])
-    const [metadata, setMetadata] = useState({} as MetadataEntries)
-    const [dataBounds, setDataBounds] = useState(null as unknown as L.LatLngBounds)
-    const [dataImported, setDataImported] = useState(false as boolean)
-    const [focusedKey, setFocusedKey] = useState(null as unknown as string)
+    const classes = useStyles();
+    const [features, setFeatures] = useState([] as GeoJSON.Feature[]);
+    const [metadata, setMetadata] = useState({} as MetadataEntries);
+    const [dataBounds, setDataBounds] = useState(null as unknown as L.LatLngBounds);
+    const [dataImported, setDataImported] = useState(false as boolean);
+    const [focusedKey, setFocusedKey] = useState(null as unknown as string);
     const [inspectorOpen, setInspectorOpen] = useState(false as boolean);
-    const [inspecting, setInspecting] = useState(null as unknown as GeoJSON.Feature)
-
-    const renderImporter = () => {
-        if (!dataImported) {
-            return <ImportMapData {...{ setFeatures, setMetadata, setDataImported }} />
-        }
-    }
-
-    const renderInspector = () => {
-        if(inspectorOpen) {
-            return <Inspector {...{inspecting, setInspectorOpen, metadata, focusedKey, setFocusedKey}}/>
-        }
-    }
-
-    const getType = (value: any): MetadataType => {
-        if(typeof value === 'number') {
-            return 'quantitative'
-        }
-        return 'categorical'
-    }
+    const [inspecting, setInspecting] = useState(null as unknown as GeoJSON.Feature);
 
     useEffect(() => {
         if(inspecting) {
             setInspectorOpen(true);
         }
-    }, [inspecting])
+    }, [inspecting]);
 
     useEffect(() => {
         if(!inspectorOpen){
             setInspecting(null as unknown as GeoJSON.Feature)
         }
-    }, [inspectorOpen])
+    }, [inspectorOpen]);
 
     useEffect(() => {
         if (features.length) {
@@ -182,11 +176,37 @@ export default function App() {
             setMetadata(newMetadata)
             setFocusedKey(Object.keys(newMetadata)[0])
         }
-    }, [features])
+    }, [features]);
+
+    const renderImporter = () => {
+        if (!dataImported) {
+            return <ImportMapData {...{ setFeatures, setMetadata, setDataImported }} />
+        }
+    }
+
+    const renderInspector = () => {
+        if(inspectorOpen) {
+            return <Inspector {...{inspecting, setInspectorOpen, metadata, focusedKey, setFocusedKey}}/>
+        }
+    }
+
+    function renderModalButton() {
+        return dataImported ? <Button variant="contained" onClick={() => setDataImported(false)}>Upload New Data</Button> : null;
+    }
+
+    const getType = (value: any): MetadataType => {
+        if(typeof value === 'number') {
+            return 'quantitative'
+        }
+        return 'categorical'
+    }
 
     return (
         <ThemeProvider theme={theme}>
             <div className="App">
+                <div className={classes.modalButton}>
+                    {renderModalButton()}
+                </div>
                 <div className="Map">
                     <MapContainer center={[40.5, -105.5]} zoom={4} preferCanvas={true} renderer={L.canvas()} worldCopyJump={true}>
                         <Map {...{features: Object.keys(metadata).length ? features : [], metadata, dataBounds, focusedKey, setInspecting}}/>

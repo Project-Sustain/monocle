@@ -69,7 +69,7 @@ import {
     ListItemText,
     Paper,
     Typography,
-    Link
+    Link,
 } from '@mui/material';
 import SortFeatureCollection from '../lib/SortFeatureCollections';
 import {styled} from "@mui/material";
@@ -103,7 +103,7 @@ const useStyles = makeStyles(() => ({
 
 export default function ImportMapData({ setFeatures, setDataImported }: ImportMapDataProps) {
     const classes = useStyles();
-    const [valid, setValid] = useState(Validity.none as Validity)
+    const [valid, setValid] = useState(Validity.none as Validity);
     const acceptableTypes = [".json", ".geojson", ".JSON", ".GEOJSON", ".GeoJSON"];
 
     const importGeoJSON = (json: any) => {
