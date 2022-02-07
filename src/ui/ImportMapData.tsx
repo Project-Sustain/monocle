@@ -124,6 +124,7 @@ export default function ImportMapData({ setFeatures, setDataImported }: ImportMa
             return;
         }
 
+        setFeatures([]);
         if (Array.isArray(json)) {
             importProbableFeatureArray(json)
             return;
