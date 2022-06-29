@@ -70,8 +70,10 @@ import Inspector from './inspector/Inspector';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import {Button} from "@mui/material";
 import {makeStyles} from "@material-ui/core";
-const MAXIMUM_CATEGORIES = 1000;
+import BugReport from "./ui/BugReport";
+import BugAlert from "./ui/BugAlert";
 
+const MAXIMUM_CATEGORIES = 1000;
 export const orangePrimary = '#ff5722';
 
 const theme = createTheme({
@@ -86,7 +88,7 @@ const theme = createTheme({
 const useStyles = makeStyles(() => ({
     modalButton: {
         position: "fixed",
-        zIndex: "10000",
+        zIndex: "5000",
         top: 15,
         right: 15,
     }
@@ -101,6 +103,8 @@ export default function App() {
     const [focusedKey, setFocusedKey] = useState(null as unknown as string);
     const [inspectorOpen, setInspectorOpen] = useState(false as boolean);
     const [inspecting, setInspecting] = useState(null as unknown as GeoJSON.Feature);
+    const [alert, setAlert] = useState(false);
+    const [bugReportOpen, setBugReportOpen] = useState(false);
 
     useEffect(() => {
         if(inspecting) {
@@ -179,13 +183,13 @@ export default function App() {
     }, [features]);
 
     const renderImporter = () => {
-        if (!dataImported) {
+        if (!dataImported && !bugReportOpen) {
             return <ImportMapData {...{ setFeatures, setMetadata, setDataImported }} />
         }
     }
 
     const renderInspector = () => {
-        if(inspectorOpen) {
+        if(inspectorOpen && !bugReportOpen) {
             return <Inspector {...{inspecting, setInspectorOpen, metadata, focusedKey, setFocusedKey}}/>
         }
     }
@@ -205,6 +209,8 @@ export default function App() {
         <ThemeProvider theme={theme}>
             <div className="App">
                 <div className={classes.modalButton}>
+                    <BugReport open={bugReportOpen} setOpen={setBugReportOpen} setAlert={setAlert} />
+                    <BugAlert alert={alert} setAlert={setAlert} />
                     {renderModalButton()}
                 </div>
                 <div className="Map">

@@ -1,14 +1,18 @@
 import * as React from 'react';
-import {useState} from "react";
+import { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core";
 import {Stack, Typography} from "@mui/material";
-import {Modal, TextField, Paper, Button} from "@material-ui/core";
+import {Modal, TextField, Paper, Button, IconButton, Tooltip} from "@material-ui/core";
 import { Octokit } from "@octokit/core";
 import BugReportIcon from '@mui/icons-material/BugReport';
 import CloseIcon from '@mui/icons-material/Close';
 import SendIcon from '@mui/icons-material/Send';
+import { auth } from './bugSubmitAuth';
 
 const useStyles = makeStyles( {
+    root: {
+        zIndex: '7000',
+    },
     inputField: {
         width: '100%',
     },
@@ -33,16 +37,28 @@ const useStyles = makeStyles( {
         marginBottom: "10px",
         width: "100%"
     },
+    button: {
+        float: 'right'
+    }
 });
 
 export default function BugReport(props) {
     const classes = useStyles();
 
-    const [open, setOpen] = useState(false);
     const [description, setDescription] = useState("");
+    const [disableSubmit, setDisableSubmit] = useState(true);
 
-    const handleOpen = () => setOpen(true);
-    const handleClose = () => setOpen(false);
+    useEffect(() => {
+        const numberOfWords = description.split(" ").length;
+        setDisableSubmit(!(numberOfWords > 3) || description === '');
+    }, [description])
+
+    const handleOpen = () => {
+        props.setOpen(true);
+    };
+    const handleClose = () => {
+        props.setOpen(false);
+    };
 
     function updateDescription(event) {
         const input = event.target.value;
@@ -52,13 +68,13 @@ export default function BugReport(props) {
     async function sendGitHub() {
 
         const octokit = new Octokit({
-            auth: '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'
+            auth: auth
         })
 
-        await octokit.request('POST /repos/Kmbear3/BugTracking/issues', {
-            owner: 'Kmbear3',
-            repo: 'bugTracking',
-            title: 'Found a Bug in Athena',
+        await octokit.request('POST /repos/Project-Sustain/monocle/issues', {
+            owner: 'Project-Sustain',
+            repo: 'monocle',
+            title: `Bug Report: ${description.split(" ").slice(0, 3).join(" ")}...`,
             body: description,
             labels: [
                 'bug', 'userSubmitted'
@@ -68,10 +84,16 @@ export default function BugReport(props) {
     }
 
     return (
-        <div>
-            <Button className={classes.button} variant="outlined" onClick={handleOpen}><BugReportIcon/>&nbsp;Report Bug</Button>
+        <div className={classes.root}>
+            <div className={classes.button}>
+                <Tooltip title='Bug Report'>
+                    <IconButton variant="outlined" onClick={handleOpen}>
+                        <BugReportIcon/>
+                    </IconButton>
+                </Tooltip>
+            </div>
             <Modal
-                open={open}
+                open={props.open}
                 onClose={handleClose}
             >
                 <Paper className={classes.paper}>
@@ -90,13 +112,14 @@ export default function BugReport(props) {
                         onChange={(event) => updateDescription(event)}
                     />
                     <Stack direction='row' spacing={2} className={classes.buttons}>
-                        <Button className={classes.button} variant="outlined" onClick={() => {
+                        <Button disabled={disableSubmit} variant="outlined" onClick={() => {
                             sendGitHub().then(() => {
+                                setDescription("");
                                 handleClose();
                                 props.setAlert(true);
                             });
                         }}><SendIcon/>&nbsp;Submit Bug</Button>
-                        <Button className={classes.button} variant="outlined" onClick={handleClose}><CloseIcon/></Button>
+                        <Button variant="outlined" onClick={handleClose}><CloseIcon/></Button>
                     </Stack>
                 </Paper>
             </Modal>
