@@ -76,6 +76,8 @@ import {styled} from "@mui/material";
 import FancyButton from "./FancyButton";
 import FolderIcon from '@mui/icons-material/Folder';
 import InfoIcon from '@mui/icons-material/Info';
+import BugReport from "./BugReport";
+import BugAlert from "./BugAlert";
 
 interface ImportMapDataProps {
     setFeatures: React.Dispatch<React.SetStateAction<GeoJSON.Feature<GeoJSON.Geometry, GeoJSON.GeoJsonProperties>[]>>,
@@ -105,6 +107,7 @@ export default function ImportMapData({ setFeatures, setDataImported }: ImportMa
     const classes = useStyles();
     const [valid, setValid] = useState(Validity.none as Validity);
     const acceptableTypes = [".json", ".geojson", ".JSON", ".GEOJSON", ".GeoJSON"];
+    const [alert, setAlert] = useState(false);
 
     const importGeoJSON = (json: any) => {
         //validate the json
@@ -231,9 +234,13 @@ export default function ImportMapData({ setFeatures, setDataImported }: ImportMa
                     </label>
                 </Grid>
                 <Grid item xs={12}>
+                    <BugReport setAlert={setAlert} />
+                </Grid>
+                <Grid item xs={12}>
                     <br />
                     <Typography>{status()}</Typography>
                 </Grid>
+                <BugAlert alert={alert} setAlert={setAlert} />
             </Grid>
         </Paper>
     );
