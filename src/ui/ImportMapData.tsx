@@ -93,7 +93,7 @@ const useStyles = makeStyles(() => ({
     root: {
         width: "40vw",
         position: "absolute",
-        zIndex: "10000",
+        zIndex: "5000",
         top: "50%",
         left: "50%",
         transform: "translate(-50%, -50%)",
